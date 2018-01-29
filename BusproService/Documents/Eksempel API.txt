@@ -1,0 +1,243 @@
+
+//Create instance of BusproService connector on default port 6000
+var busproService = new BusproService.BusproService();
+
+//Create instance of BusproService connector on specified gateway and default port 6000
+var busproService = new BusproService.BusproService(ipAddress);
+
+//Create instance of BusproService connector
+var busproService = new BusproService.BusproService(ipAddress, port);
+
+// Initialize Dimmer object and assign to connector
+var dimmer = new Dimmer(DeviceType.SB_DN_DT0601, new DeviceAddress { SubnetId = 1, DeviceId = 100 });
+busproService.Device = dimmer;
+
+// Set command for device object and submit command (set channel 5 to 50% during 5 seconds)
+dimmer.SingleChannelControl(5, 50, 5);
+busproService.Submit();
+
+// Initialize Relay object and assign to connector
+var relay = new Relay(DeviceType.SB_DN_R0816, new DeviceAddress { SubnetId = 1, DeviceId = 100 });
+busproService.Device = relay;
+
+// Set command for device object and submit command (turn channel 4 off)
+relay.SingleChannelControl(4, ChannelState.Off);
+busproService.Submit();
+
+
+
+
+
+
+
+
+
+
+
+
+
+	//Create instance of SmartBus connector
+	var bus = new SmartBus({
+	  device: '1.50',           // Connector address in HDL network (subnet.id)
+	  gateway: '192.168.1.250', // HDL SmartBus gateway IP
+	  port: 6000                // and port, default: 6000
+	});
+
+	//Create instance of SmartBus connector
+	var bus = new SmartBus('hdl://1.50@192.168.1.250:6000');
+
+//Add handler to intercept all commands across bus
+bus.on('command', function(command) {
+
+  // Integer with command operation code
+  command.code;
+
+  // Device objects
+  command.sender;
+  command.target;
+
+  // Object with decoded data or raw buffer
+  // if data can not be parsed automatically
+  command.data;
+
+});
+
+//Handlers can be added for broadcast messages or specific commands
+bus.on('broadcast', function(command) { ... });
+bus.on(0x0032, function(command) { ... });
+
+//Listen for commands from specific device
+var sensor = bus.device('1.20');
+sensor.on(0x1647, function(data, target) { ... });
+
+//Use connector to send commands
+bus.send('1.4', 0x0004, function(err) { ... });
+bus.send('1.4', 0x0031, { channel: 1, level: 100 }, function(err) { ... });
+
+//Or use device object
+var logic = bus.device('1.10');
+logic.send(0xE01C, { switch: 1, status: 1 }, function(err) { ... });
+
+//Initialize channel object
+var dimmer = bus.device('1.4');
+var spotlights = dimmer.channel(2);
+
+//Listen to channel status event
+spotlights.on('status', function() {
+  console.log('Spotlights level is %s', spotlights.level);
+});
+
+//Set device channel level value to 100 in 5 seconds
+spotlights.control(100, { time: 5 }, function(err) { ... });
+//control function will send 0x0031 command into bus.
+
+
+
+_var busproService = new BusproService.BusproService("192.168.1.15", 6000);
+_var device = new Dimmer(1, 100);
+_var dimmer = busproService.Device(device);
+_dimmer.Channel = 5;
+_dimmer.SingleChannelControl(100, 0)
+
+
+_BusproService = new BusproService.BusproService(...);
+_IDimmer = new Dimmer(...);
+_IDevice = busproService.Device(IDevice);
+
+
+
+DEVICE
+IDevice
+IDimmer
+IRelay
+IDimmer_Relay
+	//void SingleChannelControl(int intensity, int secondsRunningTime);
+	//void SingleChannelControl(int intensity, TimeSpan secondsRunningtime)
+	//void SingleChannelControl(ChannelState channelState)
+	
+	void SingleChannelControl(int channel, int intensity, int secondsRunningtime)
+	void SingleChannelControl(int channel, int intensity, TimeSpan secondsRunningtime)
+	void SingleChannelControl(int channel, ChannelState channelState)
+
+	void ReadStatus()
+	void ReadStatus(int channel)
+
+	
+	
+BUSPROSERVICE
+IDimmer = new Dimmer(DeviceType deviceType, DeviceAddress deviceAddress)
+IDimmer = new Dimmer(DeviceAddress deviceAddress)
+IDimmer = new Dimmer(int subnetId, int deviceId)
+
+_dimmer.Channel(2);
+
+_dimmer.SingleChannelControl(int intensity, int secondsRunningtime)
+_dimmer.SingleChannelControl(int intensity, TimeSpan secondsRunningtime)
+
+_dimmer.SingleChannelControl(int channel, int intensity, int secondsRuntime)
+_dimmer.SingleChannelControl(int channel, int intensity, TimeSpan secondsRuntime)
+
+_dimmer.ReadStatus()
+_dimmer.ReadStatus(int channel)
+
+
+public class BusproData
+{
+	public bool Success;
+	public bool ErrorMessageSpecified;
+	public string ErrorMessage;
+
+	public DeviceAddress SourceAddress;
+	public DeviceAddress TargetAddress;
+
+	public DeviceType SourceDeviceType;
+	public byte[] OperationCode;
+
+	public byte[] RawData;
+	public byte[] AdditionalContent;
+}
+
+enum ChannelState
+	Off = 0
+	On = 100
+	
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+Dimmer
+	Scene
+	Sequence
+
+SingleChannelControl	subnetid, deviceid, channel, intensity, minutes, seconds
+
+UniversalSwitch			subnetid, deviceid, switch, value_on_off
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void Main(string[] args)
+{
+	var controller = new BusproController();
+	controller.ControllerStatusChanged += Controller_ControllerStatusChanged;
+	
+	var command = "";
+	while (command != "!")
+	{
+		command = Console.ReadLine();
+		switch (command)
+		{
+			case "0";
+				break;
+		}
+	}
+	Console.WriteLine("\nCiao!\n");
+	controller.Dispose();
+}
+
+void Controller_ControllerStatusChanged (object sender, ControllerStatusEventArgs args)
+{
+	var controllerStatus = args.Status;
+	Console.WriteLine("ControllerStatusChange {0}", controllerStatus);
+	
+	var controller = (sender as ZWaveController);
+	controller.GetHomeId();
+}
+
+
+
+
+
+
+
+
+
+var controller = new BusproController();
+controller.MessageReceived += Controller_MessageReceived;
+
+var dimmer = controller.Device(new Dimmer(...);
+dimmer.Set....
+
+void Controller_MessageReceived(object sender, MessageEventArgs args) {}
+
+
+

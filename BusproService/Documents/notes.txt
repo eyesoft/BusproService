@@ -1,0 +1,85 @@
+﻿ToDo:
+
+- Implementere Callback ved funksjonskall
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	/* PATTERNS OPERATECODE
+	 * 
+	 * SingleChannelLightingControl = 0x0031
+	 *		ChannelNo, Intensity, RunningTimeMinutes, RunningTimeSeconds													(Length=4)
+	 *		ChannelNo, Intensity, RunningTimeminutes, RunningTimeSeconds, 3 (single on/off???)		(Length=5)
+	 * 
+	 * UniversalSwitch = 0xE01C
+	 *		SwitchNo, On/Off (0/255)
+	 * 
+	 * Scene = 0x0002
+	 *		AreaNo, SceneNo
+	 * 
+	 * Response_Scene = 0x0003
+	 *		AreaNo, SceneNo, 6 (?), 1/31 (?)
+	 * 
+	 * Response_SingleChannelLightingControl = 0x0032
+	 *		ChannelNo, 248, Intensity, 6, 0/40/32/8/16/111	RELE 0-10V	(Length=5)
+	 *		ChannelNo, 248, Intensity, 8, 0/193							RELE				(Length=5)
+	 *		ChannelNo, 248, Intensity												DIMMER			(Length=3)
+	 * 
+	 * Response_UniversalSwitch = 0xE01D
+	 *		SwitchNo, On/Off (1/0)
+	 * 
+	 * TIME = 0xDA44		(hvis fra logikk modul)
+	 *		År, måned, dag, time, minutt, sekund
+	 * 
+	 * INFO_IF_FROM_12in1__1 = 0x1647
+	 *		50, 0, Lux (25), 0, 0, 0, 0, 0, 0
+	 *		52, 0, 81, 0, 0, 0, 0, 0, 0
+	 *		51, 0, 155, 0, 0, 0, 0, 0, 0
+	 * 
+	 * INFO_IF_FROM_12in1__2 = 0xE3E5
+	 *		1, Temp (30), 0, 0, 240, 65
+	 *		1, Temp (32), 0, 0, 0, 66
+	 *		1, Temp (31), 0, 0, 248, 65
+	 * 
+	 * INFO_IF_FROM_RELE_10V = 0xEFFF
+	 *		ChannelNo (3), 254, 254, Intensity? (255), 6, 8
+	 *		ChannelNo (1), 254, 6, 109
+	 *		3 254 254 255 6 12
+	 *		1 254 6 46
+	 *		
+	 * 
+	 * 
+	 * RESPONSE_QUERY_DLP_FROM_SETUP_TOOL_1 = 0xE0E5
+	 *		248 1 255 255 9 1 0
+	 * 
+	 * RESPONSE_QUERY_DLP_FROM_SETUP_TOOL_2 = 0x1945
+	 *		0 23 1 1			?, temp now, ?, ?
+	 *		23 20 20 20		normal temp, day temp, night temp, away temp
+	 *		
+	 * RESPONSE_QUERY_DLP_FROM_SETUP_TOOL_3 = 0x1941		// FLOOR HEATING
+	 *		1 
+	 *		1 1 131 4 
+	 *		0 1 7		2	
+	 *		0 1 7		3 
+	 *		0	1 7		4 
+	 *		0 
+	 *		0 1 1 1 
+	 *		0 1 1 1 
+	 *		0 1 1 1 0 1 1 1 1 0 0 0 6 1 0 7 0 19 0 20
+	 * 
+	 * RESPONSE_QUERY_DLP_FROM_SETUP_TOOL_4 = 0x1947		// FLOOR HEATING WORKING STATUS CONTROL
+	 *		248 0 1 1 
+	 *		23 20 20 20		normal temp, day temp, night temp, away temp
+	 * 
+	 */

@@ -1,0 +1,36 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v2.0",
+    "signature": "da39a3ee5e6b4b0d3255bfef95601890afd80709"
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v2.0": {
+      "TestConsoleApp/1.0.0": {
+        "dependencies": {
+          "BusproService": "1.0.0"
+        },
+        "runtime": {
+          "TestConsoleApp.dll": {}
+        }
+      },
+      "BusproService/1.0.0": {
+        "runtime": {
+          "BusproService.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "TestConsoleApp/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "BusproService/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

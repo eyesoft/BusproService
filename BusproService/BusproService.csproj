@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="BusproServiceLogic.cs" />
+    <Compile Remove="BusproService_20180123_1334.cs" />
+    <Compile Remove="IBusproServiceLogic.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="notes.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Documents\" />
+  </ItemGroup>
+
+</Project>
