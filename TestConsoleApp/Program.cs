@@ -20,7 +20,8 @@ namespace SmartHdlConsoleApp
 
 		private static void Main(string[] args)
 		{
-
+			// Main method
+			
 			using (var busproController = new BusproController(Ip, Port))
 			{
 				busproController.ContentReceived += busproController_ContentReceived;
