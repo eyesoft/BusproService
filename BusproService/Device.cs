@@ -45,23 +45,23 @@ namespace BusproService
 		{
 		}
 
-		protected Device(int subnetId, int deviceId)
+		public Device(int subnetId, int deviceId)
 		{
 			DeviceAddress = new DeviceAddress { SubnetId = subnetId, DeviceId = deviceId };
 		}
 
-		protected Device(DeviceAddress deviceAddress)
+		public Device(DeviceAddress deviceAddress)
 		{
 			DeviceAddress = deviceAddress;
 		}
 
-		protected Device(DeviceType deviceType, DeviceAddress deviceAddress)
+		public Device(DeviceType deviceType, DeviceAddress deviceAddress)
 		{
 			DeviceAddress = deviceAddress;
 			DeviceType = deviceType;
 		}
 
-		protected Device(BusproController controller, DeviceType deviceType, DeviceAddress deviceAddress)
+		internal Device(BusproController controller, DeviceType deviceType, DeviceAddress deviceAddress)
 		{
 			Controller = controller;
 			DeviceAddress = deviceAddress;

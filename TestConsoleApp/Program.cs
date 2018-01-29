@@ -2,6 +2,7 @@
 // https://github.com/caligo-mentis/smart-bus
 
 using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using BusproService;
@@ -22,12 +23,17 @@ namespace SmartHdlConsoleApp
 		{
 			using (var busproController = new BusproController(Ip, Port))
 			{
-				busproController.ContentReceived += busproController_ContentReceived;
+				// listen to events for all content
+				//busproController.ContentReceived += busproController_ContentReceived;
+
+				// listen to events for devices added to controller
 				busproController.DeviceDataContentReceived += busproController_ContentReceivedForDevice;
 
+				// sender/source address and devicetype
 				busproController.SourceAddress = new DeviceAddress { DeviceId = SourceDeviceId, SubnetId = SourceSubnetId };
 				busproController.SourceDeviceType = SourceDeviceType;
 
+				// creates new background thread
 				new Thread(() =>
 				{
 					Thread.CurrentThread.IsBackground = true;
@@ -40,12 +46,22 @@ namespace SmartHdlConsoleApp
 
 				Console.WriteLine("Press enter to close...\n");
 
-				ListenToDevice(busproController);
+				// add devices to controller
+				AddDevices(busproController);
+
+				// return all devices in controller
+				var devices = busproController.Device;
+
+				// get specific device from controller
+				var logic = busproController.GetDevice(new DeviceAddress { SubnetId = 1, DeviceId = 100 });
+				Console.WriteLine(logic == null ? "Did not find Device\n" : "Found Device\n");
+
+				//logic.SendOperationCode()...
 
 				//Thread.Sleep(10000);
 				//TurnOffLightMediaroom(busproController);
 				//QueryDlp(busproController);
-				
+
 				Console.ReadLine();
 			}
 
@@ -57,13 +73,22 @@ namespace SmartHdlConsoleApp
 
 			if (result == null || !result.Success) return;
 
-			Console.WriteLine("Received data for " + result.SourceAddress.SubnetId + "."  + result.SourceAddress.DeviceId);
+			Console.WriteLine("Received data for " + result.SourceAddress.SubnetId + "." + result.SourceAddress.DeviceId + ":");
+			ParseData(result);
 		}
 
 
 		private static void busproController_ContentReceived(object sender, ContentEventArgs args)
 		{
-			var result = args;
+			ParseData(args);
+		}
+
+
+
+
+		private static void ParseData(ContentEventArgs data)
+		{
+			var result = data;
 
 			if (result == null || !result.Success) return;
 
@@ -122,12 +147,13 @@ namespace SmartHdlConsoleApp
 		}
 
 
-		public static void ListenToDevice(IBusproController busproController)
+
+
+		public static void AddDevices(IBusproController busproController)
 		{
-			var device = new Logic(1, 100);
-			// tag for eventhandling
-			// device.tag
-			var logic = (Logic)busproController.Device(device);
+			var logic = (Logic)busproController.AddDevice(new Logic(1, 100));
+			var device1 = busproController.AddDevice(new Device(1, 130));
+			var device2 = busproController.AddDevice(new Device(1, 131));
 		}
 
 
@@ -135,7 +161,7 @@ namespace SmartHdlConsoleApp
 		{
 			try
 			{
-				var dimmerKino = (Dimmer)busproController.Device(new Dimmer(1, 74));
+				var dimmerKino = (Dimmer)busproController.AddDevice(new Dimmer(1, 74));
 				var ok = dimmerKino.SingleChannelControl(1, 0, 0);
 				Console.WriteLine($"Medierom..SingleChannelControl(1, 0, 0): {ok}\n\n");
 			}
@@ -151,11 +177,11 @@ namespace SmartHdlConsoleApp
 		{
 			try
 			{
-				var dlpStue = (Dlp)busproController.Device(new Dlp(1, 21));
+				var dlpStue = (Dlp)busproController.AddDevice(new Dlp(1, 21));
 				var ok = dlpStue.ReadFloorHeatingStatus();
 				Console.WriteLine($"ReadFloorHeatingStatus(): {ok}\n\n");
 
-				var dlpTrim = (Dlp)busproController.Device(new Dlp(1, 13));
+				var dlpTrim = (Dlp)busproController.AddDevice(new Dlp(1, 13));
 				ok = dlpTrim.ReadFloorHeatingStatus();
 				Console.WriteLine($"ReadFloorHeatingStatus(): {ok}\n\n");
 
@@ -174,11 +200,11 @@ namespace SmartHdlConsoleApp
 
 
 
-				//var dlpStue = (Dlp)busproController.Device(new Dlp(1, 21));
+				//var dlpStue = (Dlp)busproController.AddDevice(new Dlp(1, 21));
 				//var ok = dlpStue.ReadAcCurrentState();
 				//Console.WriteLine($"Stue..ReadAcCurrentState(): {ok}\n\n");
 
-				//var dlpBad = (Dlp)busproController.Device(new Dlp(1, 17));
+				//var dlpBad = (Dlp)busproController.AddDevice(new Dlp(1, 17));
 				//ok = dlpBad.ReadAcCurrentState();
 				//Console.WriteLine($"Bad..ReadAcCurrentState(): {ok}\n\n");
 

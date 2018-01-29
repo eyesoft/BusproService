@@ -16,7 +16,7 @@ namespace BusproService
 		// Skip sending data to bus
 		private const bool SkipSocketSend = false;
 
-		private List<Device> _devices;
+		public List<Device> Device { get; private set; }
 
 		// Controller status changed event handler
 		public delegate void OnReceiveEventHandler(object sender, ContentEventArgs args);
@@ -39,8 +39,8 @@ namespace BusproService
 
 
 
-		private readonly UdpClient _listener;
-		private IPEndPoint _endPoint;
+		private UdpClient Listener { get; set; }
+		private IPEndPoint EndPoint { get; set; }
 
 		public DeviceAddress SourceAddress { get; set; }
 		public DeviceType SourceDeviceType { get; set; }
@@ -66,44 +66,48 @@ namespace BusproService
 			if (port == 0) port = 6000;
 
 			//http://www.geekpedia.com/Thread13433_Why-Cant-I-Have-Multiple-Listeners-On-A-UDP-Port.html
-			_listener = new UdpClient(port);
-			_endPoint = new IPEndPoint(address, port);
-			_devices = new List<Device>();
+			Listener = new UdpClient(port);
+			EndPoint = new IPEndPoint(address, port);
+			Device = new List<Device>();
 		}
 
 
 
 
+		public Device GetDevice(DeviceAddress deviceAddress)
+		{
+			var myItem = Device.Find(device => device.DeviceAddress.SubnetId == deviceAddress.SubnetId && device.DeviceAddress.DeviceId == deviceAddress.DeviceId);
+			return myItem;
+		}
 
 
-
-		public Device Device(Device device)
+		public Device AddDevice(Device device)
 		{
 			// Adds the device to the local list of added devices
-			// Devices in this list will get their messages sent to the event handler OnReceiveDeviceData
+			// Device in this list will get their messages sent to the event handler OnReceiveDeviceData
 			// _devices.Add(device);
 
 			switch (device)
 			{
 				case Logic logic:
-					var logicDevice = new Logic(this, logic.DeviceType, logic.DeviceAddress);
-					_devices.Add(logicDevice);
-					return logicDevice;
+					return AddDeviceToController(new Logic(this, logic.DeviceType, logic.DeviceAddress));
 				case Relay relay:
-					var relayDevice = new Relay(this, relay.DeviceType, relay.DeviceAddress);
-					_devices.Add(relayDevice);
-					return relayDevice;
+					return AddDeviceToController(new Relay(this, relay.DeviceType, relay.DeviceAddress));
 				case Dimmer dimmer:
-					var dimmerDevice = new Dimmer(this, dimmer.DeviceType, dimmer.DeviceAddress);
-					_devices.Add(dimmerDevice);
-					return dimmerDevice;
+					return AddDeviceToController(new Dimmer(this, dimmer.DeviceType, dimmer.DeviceAddress));
 				case Dlp dlp:
-					var dlpDevice = new Dlp(this, dlp.DeviceType, dlp.DeviceAddress);
-					_devices.Add(dlpDevice);
-					return dlpDevice;
+					return AddDeviceToController(new Dlp(this, dlp.DeviceType, dlp.DeviceAddress));
+				default:
+					return AddDeviceToController(new Device(this, device.DeviceType, device.DeviceAddress));
 			}
+		}
 
-			return null;
+		private Device AddDeviceToController(Device device)
+		{
+			// if device is not already added
+			var alreadyExists = Device.Any(x => x.DeviceAddress.SubnetId == device.DeviceAddress.SubnetId && x.DeviceAddress.DeviceId == device.DeviceAddress.DeviceId);
+			if (!alreadyExists) Device.Add(device);
+			return device;
 		}
 
 
@@ -123,7 +127,7 @@ namespace BusproService
 
 
 
-			foreach (var device in _devices)
+			foreach (var device in Device)
 			{
 				var subnetId = device.DeviceAddress.SubnetId;
 				var deviceId = device.DeviceAddress.DeviceId;
@@ -237,7 +241,7 @@ namespace BusproService
 				var sendbuf = BuildBufToSend(dataToSend);
 
 				if (!SkipSocketSend)
-					s.SendTo(sendbuf, _endPoint);
+					s.SendTo(sendbuf, EndPoint);
 
 				//var hex = ByteArrayToHex(sendbuf);
 				result.DataSent = sendbuf;
@@ -260,7 +264,8 @@ namespace BusproService
 			try
 			{
 				// Synchronous receive
-				var bytes = _listener.Receive(ref _endPoint);
+				var ipEndPoint = EndPoint;
+				var bytes = Listener.Receive(ref ipEndPoint);
 
 				const int indexLengthOfDataPackage = 16;
 				const int indexOriginalSubnetId = 17;
@@ -591,7 +596,7 @@ namespace BusproService
 		#region IDisposable Members
 		public void Dispose()
 		{
-			_listener?.Close();
+			Listener?.Close();
 		}
 		#endregion
 
@@ -647,7 +652,7 @@ namespace BusproService
 
 
 
-		//public bool Submit(Device device)
+		//public bool Submit(AddDevice device)
 		//{
 		//	//return Submit(device, OperationCode.NotSet, null);
 		//	return false;
@@ -655,7 +660,7 @@ namespace BusproService
 
 
 
-		//public bool Submit(Device device, OperationCode operationCode, byte[] additionalContent)
+		//public bool Submit(AddDevice device, OperationCode operationCode, byte[] additionalContent)
 		//{
 		//	var dataToSend = new BusproData();
 		//	var deviceType = device.DeviceType;
@@ -706,7 +711,7 @@ namespace BusproService
 
 		//	if (result.Success)
 		//	{
-		//		//Device = null;
+		//		//AddDevice = null;
 		//		return true;
 		//	}
 
