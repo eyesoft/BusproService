@@ -1,26 +1,39 @@
-C:\Users\mcaasi\Documents\Visual Studio 2017\Projects\BusproService\SmartHdlConsoleApp\bin\Debug\netcoreapp2.0\TestConsoleApp.deps.json
-C:\Users\mcaasi\Documents\Visual Studio 2017\Projects\BusproService\SmartHdlConsoleApp\bin\Debug\netcoreapp2.0\TestConsoleApp.runtimeconfig.json
-C:\Users\mcaasi\Documents\Visual Studio 2017\Projects\BusproService\SmartHdlConsoleApp\bin\Debug\netcoreapp2.0\TestConsoleApp.runtimeconfig.dev.json
-C:\Users\mcaasi\Documents\Visual Studio 2017\Projects\BusproService\SmartHdlConsoleApp\bin\Debug\netcoreapp2.0\TestConsoleApp.dll
-C:\Users\mcaasi\Documents\Visual Studio 2017\Projects\BusproService\SmartHdlConsoleApp\bin\Debug\netcoreapp2.0\TestConsoleApp.pdb
-C:\Users\mcaasi\Documents\Visual Studio 2017\Projects\BusproService\SmartHdlConsoleApp\bin\Debug\netcoreapp2.0\BusproService.dll
-C:\Users\mcaasi\Documents\Visual Studio 2017\Projects\BusproService\SmartHdlConsoleApp\bin\Debug\netcoreapp2.0\BusproService.pdb
-C:\Users\mcaasi\Documents\Visual Studio 2017\Projects\BusproService\SmartHdlConsoleApp\obj\Debug\netcoreapp2.0\TestConsoleApp.csprojResolveAssemblyReference.cache
-C:\Users\mcaasi\Documents\Visual Studio 2017\Projects\BusproService\SmartHdlConsoleApp\obj\Debug\netcoreapp2.0\TestConsoleApp.csproj.CoreCompileInputs.cache
-C:\Users\mcaasi\Documents\Visual Studio 2017\Projects\BusproService\SmartHdlConsoleApp\obj\Debug\netcoreapp2.0\TestConsoleApp.AssemblyInfoInputs.cache
-C:\Users\mcaasi\Documents\Visual Studio 2017\Projects\BusproService\SmartHdlConsoleApp\obj\Debug\netcoreapp2.0\TestConsoleApp.AssemblyInfo.cs
-C:\Users\mcaasi\Documents\Visual Studio 2017\Projects\BusproService\SmartHdlConsoleApp\obj\Debug\netcoreapp2.0\TestConsoleApp.dll
-C:\Users\mcaasi\Documents\Visual Studio 2017\Projects\BusproService\SmartHdlConsoleApp\obj\Debug\netcoreapp2.0\TestConsoleApp.pdb
-C:\Users\mcaasi\Documents\Visual Studio 2017\Projects\BusproService\TestConsoleApp\bin\Debug\netcoreapp2.0\TestConsoleApp.deps.json
-C:\Users\mcaasi\Documents\Visual Studio 2017\Projects\BusproService\TestConsoleApp\bin\Debug\netcoreapp2.0\TestConsoleApp.runtimeconfig.json
-C:\Users\mcaasi\Documents\Visual Studio 2017\Projects\BusproService\TestConsoleApp\bin\Debug\netcoreapp2.0\TestConsoleApp.runtimeconfig.dev.json
-C:\Users\mcaasi\Documents\Visual Studio 2017\Projects\BusproService\TestConsoleApp\bin\Debug\netcoreapp2.0\TestConsoleApp.dll
-C:\Users\mcaasi\Documents\Visual Studio 2017\Projects\BusproService\TestConsoleApp\bin\Debug\netcoreapp2.0\TestConsoleApp.pdb
-C:\Users\mcaasi\Documents\Visual Studio 2017\Projects\BusproService\TestConsoleApp\bin\Debug\netcoreapp2.0\BusproService.dll
-C:\Users\mcaasi\Documents\Visual Studio 2017\Projects\BusproService\TestConsoleApp\bin\Debug\netcoreapp2.0\BusproService.pdb
-C:\Users\mcaasi\Documents\Visual Studio 2017\Projects\BusproService\TestConsoleApp\obj\Debug\netcoreapp2.0\TestConsoleApp.csprojResolveAssemblyReference.cache
-C:\Users\mcaasi\Documents\Visual Studio 2017\Projects\BusproService\TestConsoleApp\obj\Debug\netcoreapp2.0\TestConsoleApp.csproj.CoreCompileInputs.cache
-C:\Users\mcaasi\Documents\Visual Studio 2017\Projects\BusproService\TestConsoleApp\obj\Debug\netcoreapp2.0\TestConsoleApp.AssemblyInfoInputs.cache
-C:\Users\mcaasi\Documents\Visual Studio 2017\Projects\BusproService\TestConsoleApp\obj\Debug\netcoreapp2.0\TestConsoleApp.AssemblyInfo.cs
-C:\Users\mcaasi\Documents\Visual Studio 2017\Projects\BusproService\TestConsoleApp\obj\Debug\netcoreapp2.0\TestConsoleApp.dll
-C:\Users\mcaasi\Documents\Visual Studio 2017\Projects\BusproService\TestConsoleApp\obj\Debug\netcoreapp2.0\TestConsoleApp.pdb
+C:/Users/mcaasi/Documents/Visual Studio 2017/Projects/BusproService/SmartHdlConsoleApp/bin/Debug/netcoreapp2.0/TestConsoleApp.deps.json
+C:/Users/mcaasi/Documents/Visual Studio 2017/Projects/BusproService/SmartHdlConsoleApp/bin/Debug/netcoreapp2.0/TestConsoleApp.runtimeconfig.json
+C:/Users/mcaasi/Documents/Visual Studio 2017/Projects/BusproService/SmartHdlConsoleApp/bin/Debug/netcoreapp2.0/TestConsoleApp.runtimeconfig.dev.json
+C:/Users/mcaasi/Documents/Visual Studio 2017/Projects/BusproService/SmartHdlConsoleApp/bin/Debug/netcoreapp2.0/TestConsoleApp.dll
+C:/Users/mcaasi/Documents/Visual Studio 2017/Projects/BusproService/SmartHdlConsoleApp/bin/Debug/netcoreapp2.0/TestConsoleApp.pdb
+C:/Users/mcaasi/Documents/Visual Studio 2017/Projects/BusproService/SmartHdlConsoleApp/bin/Debug/netcoreapp2.0/BusproService.dll
+C:/Users/mcaasi/Documents/Visual Studio 2017/Projects/BusproService/SmartHdlConsoleApp/bin/Debug/netcoreapp2.0/BusproService.pdb
+C:/Users/mcaasi/Documents/Visual Studio 2017/Projects/BusproService/SmartHdlConsoleApp/obj/Debug/netcoreapp2.0/TestConsoleApp.csprojResolveAssemblyReference.cache
+C:/Users/mcaasi/Documents/Visual Studio 2017/Projects/BusproService/SmartHdlConsoleApp/obj/Debug/netcoreapp2.0/TestConsoleApp.csproj.CoreCompileInputs.cache
+C:/Users/mcaasi/Documents/Visual Studio 2017/Projects/BusproService/SmartHdlConsoleApp/obj/Debug/netcoreapp2.0/TestConsoleApp.AssemblyInfoInputs.cache
+C:/Users/mcaasi/Documents/Visual Studio 2017/Projects/BusproService/SmartHdlConsoleApp/obj/Debug/netcoreapp2.0/TestConsoleApp.AssemblyInfo.cs
+C:/Users/mcaasi/Documents/Visual Studio 2017/Projects/BusproService/SmartHdlConsoleApp/obj/Debug/netcoreapp2.0/TestConsoleApp.dll
+C:/Users/mcaasi/Documents/Visual Studio 2017/Projects/BusproService/SmartHdlConsoleApp/obj/Debug/netcoreapp2.0/TestConsoleApp.pdb
+C:/Users/mcaasi/Documents/Visual Studio 2017/Projects/BusproService/TestConsoleApp/bin/Debug/netcoreapp2.0/TestConsoleApp.deps.json
+C:/Users/mcaasi/Documents/Visual Studio 2017/Projects/BusproService/TestConsoleApp/bin/Debug/netcoreapp2.0/TestConsoleApp.runtimeconfig.json
+C:/Users/mcaasi/Documents/Visual Studio 2017/Projects/BusproService/TestConsoleApp/bin/Debug/netcoreapp2.0/TestConsoleApp.runtimeconfig.dev.json
+C:/Users/mcaasi/Documents/Visual Studio 2017/Projects/BusproService/TestConsoleApp/bin/Debug/netcoreapp2.0/TestConsoleApp.dll
+C:/Users/mcaasi/Documents/Visual Studio 2017/Projects/BusproService/TestConsoleApp/bin/Debug/netcoreapp2.0/TestConsoleApp.pdb
+C:/Users/mcaasi/Documents/Visual Studio 2017/Projects/BusproService/TestConsoleApp/bin/Debug/netcoreapp2.0/BusproService.dll
+C:/Users/mcaasi/Documents/Visual Studio 2017/Projects/BusproService/TestConsoleApp/bin/Debug/netcoreapp2.0/BusproService.pdb
+C:/Users/mcaasi/Documents/Visual Studio 2017/Projects/BusproService/TestConsoleApp/obj/Debug/netcoreapp2.0/TestConsoleApp.csprojResolveAssemblyReference.cache
+C:/Users/mcaasi/Documents/Visual Studio 2017/Projects/BusproService/TestConsoleApp/obj/Debug/netcoreapp2.0/TestConsoleApp.csproj.CoreCompileInputs.cache
+C:/Users/mcaasi/Documents/Visual Studio 2017/Projects/BusproService/TestConsoleApp/obj/Debug/netcoreapp2.0/TestConsoleApp.AssemblyInfoInputs.cache
+C:/Users/mcaasi/Documents/Visual Studio 2017/Projects/BusproService/TestConsoleApp/obj/Debug/netcoreapp2.0/TestConsoleApp.AssemblyInfo.cs
+C:/Users/mcaasi/Documents/Visual Studio 2017/Projects/BusproService/TestConsoleApp/obj/Debug/netcoreapp2.0/TestConsoleApp.dll
+C:/Users/mcaasi/Documents/Visual Studio 2017/Projects/BusproService/TestConsoleApp/obj/Debug/netcoreapp2.0/TestConsoleApp.pdb
+/Users/audun/Projects/eyesoft/BusproService.git/TestConsoleApp/bin/Debug/netcoreapp2.0/TestConsoleApp.deps.json
+/Users/audun/Projects/eyesoft/BusproService.git/TestConsoleApp/bin/Debug/netcoreapp2.0/TestConsoleApp.runtimeconfig.json
+/Users/audun/Projects/eyesoft/BusproService.git/TestConsoleApp/bin/Debug/netcoreapp2.0/TestConsoleApp.runtimeconfig.dev.json
+/Users/audun/Projects/eyesoft/BusproService.git/TestConsoleApp/bin/Debug/netcoreapp2.0/TestConsoleApp.dll
+/Users/audun/Projects/eyesoft/BusproService.git/TestConsoleApp/bin/Debug/netcoreapp2.0/TestConsoleApp.pdb
+/Users/audun/Projects/eyesoft/BusproService.git/TestConsoleApp/bin/Debug/netcoreapp2.0/BusproService.dll
+/Users/audun/Projects/eyesoft/BusproService.git/TestConsoleApp/bin/Debug/netcoreapp2.0/BusproService.pdb
+/Users/audun/Projects/eyesoft/BusproService.git/TestConsoleApp/obj/Debug/netcoreapp2.0/TestConsoleApp.csprojResolveAssemblyReference.cache
+/Users/audun/Projects/eyesoft/BusproService.git/TestConsoleApp/obj/Debug/netcoreapp2.0/TestConsoleApp.csproj.CoreCompileInputs.cache
+/Users/audun/Projects/eyesoft/BusproService.git/TestConsoleApp/obj/Debug/netcoreapp2.0/TestConsoleApp.AssemblyInfoInputs.cache
+/Users/audun/Projects/eyesoft/BusproService.git/TestConsoleApp/obj/Debug/netcoreapp2.0/TestConsoleApp.AssemblyInfo.cs
+/Users/audun/Projects/eyesoft/BusproService.git/TestConsoleApp/obj/Debug/netcoreapp2.0/TestConsoleApp.dll
+/Users/audun/Projects/eyesoft/BusproService.git/TestConsoleApp/obj/Debug/netcoreapp2.0/TestConsoleApp.pdb
