@@ -44,6 +44,7 @@ namespace SmartHdlConsoleApp
 					}
 				}).Start();
 
+				Console.WriteLine($"Gateway address set to {busproController.Address}:{busproController.Port}");
 				Console.WriteLine("Press enter to close...\n");
 
 				// add devices to controller
@@ -59,7 +60,7 @@ namespace SmartHdlConsoleApp
 				//logic.SendOperationCode()...
 
 				//Thread.Sleep(10000);
-				//TurnOffLightMediaroom(busproController);
+				TurnOffLightMediaroom(busproController);
 				//QueryDlp(busproController);
 
 				Console.ReadLine();

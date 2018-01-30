@@ -2,6 +2,9 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-/.vs/BusproService/v15/Server/sqlite3/db.lock
-/.vs/BusproService/v15/Server/sqlite3
+/.vs/BusproService/v15/
 /.vscode
+/BusproService/bin/
+/BusproService/obj/
+/TestConsoleApp/bin/
+/TestConsoleApp/obj/

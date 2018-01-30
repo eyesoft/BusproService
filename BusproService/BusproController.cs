@@ -39,14 +39,13 @@ namespace BusproService
 
 
 
-		private UdpClient Listener { get; set; }
-		private IPEndPoint EndPoint { get; set; }
+		private UdpClient Listener { get; }
+		private IPEndPoint EndPoint { get; }
 
 		public DeviceAddress SourceAddress { get; set; }
 		public DeviceType SourceDeviceType { get; set; }
-
-
-
+		public int Port { get; }
+		public IPAddress Address { get; }
 
 
 
@@ -68,6 +67,10 @@ namespace BusproService
 			//http://www.geekpedia.com/Thread13433_Why-Cant-I-Have-Multiple-Listeners-On-A-UDP-Port.html
 			Listener = new UdpClient(port);
 			EndPoint = new IPEndPoint(address, port);
+
+			Port = port;
+			Address = address;
+
 			Device = new List<Device>();
 		}
 
