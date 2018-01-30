@@ -30,8 +30,13 @@ namespace BusproService
 
 
 
+		public delegate void OnReceiveDeviceDataEventHandler(object sender, ContentEventArgs args);
+		public event OnReceiveDeviceDataEventHandler DeviceDataContentReceived;
 
-
+		internal virtual void OnReceiveDeviceData(ContentEventArgs args)
+		{
+			DeviceDataContentReceived?.Invoke(this, args);
+		}
 
 
 
@@ -135,7 +140,35 @@ namespace BusproService
 			var result = Controller.WriteBus(data);
 			return result;
 		}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	}
+
+
+
+
+
+
+
+
+
+
+
+
 
 	public class Logic : Device, ILogic
 	{

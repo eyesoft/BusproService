@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using BusproService;
@@ -27,7 +28,7 @@ namespace SmartHdlConsoleApp
 				//busproController.ContentReceived += busproController_ContentReceived;
 
 				// listen to events for devices added to controller
-				busproController.DeviceDataContentReceived += busproController_ContentReceivedForDevice;
+				//busproController.DeviceDataContentReceived += busproController_ContentReceivedForDevice;
 
 				// sender/source address and devicetype
 				busproController.SourceAddress = new DeviceAddress { DeviceId = SourceDeviceId, SubnetId = SourceSubnetId };
@@ -60,7 +61,7 @@ namespace SmartHdlConsoleApp
 				//logic.SendOperationCode()...
 
 				//Thread.Sleep(10000);
-				TurnOffLightMediaroom(busproController);
+				//TurnOffLightMediaroom(busproController);
 				//QueryDlp(busproController);
 
 				Console.ReadLine();
@@ -71,10 +72,9 @@ namespace SmartHdlConsoleApp
 		private static void busproController_ContentReceivedForDevice(object sender, ContentEventArgs args)
 		{
 			var result = args;
-
 			if (result == null || !result.Success) return;
 
-			Console.WriteLine("Received data for " + result.SourceAddress.SubnetId + "." + result.SourceAddress.DeviceId + ":");
+			Console.WriteLine($"Received data for {ParseDeviceAddress(result.SourceAddress)}:");
 			ParseData(result);
 		}
 
@@ -152,10 +152,50 @@ namespace SmartHdlConsoleApp
 
 		public static void AddDevices(IBusproController busproController)
 		{
+			// add device and listen to events for this device
 			var logic = (Logic)busproController.AddDevice(new Logic(1, 100));
+			logic.DeviceDataContentReceived += logic_DeviceDataContentReceived;
+
+			// add device and listen to events for this device
 			var device1 = busproController.AddDevice(new Device(1, 130));
+			device1.DeviceDataContentReceived += device1_DeviceDataContentReceived;
+
+			// add device and listen to events for this device
 			var device2 = busproController.AddDevice(new Device(1, 131));
+			device2.DeviceDataContentReceived += device2_DeviceDataContentReceived;
 		}
+
+		private static void logic_DeviceDataContentReceived(object sender, ContentEventArgs args)
+		{
+			var result = args;
+			if (result == null || !result.Success) return;
+
+			Console.WriteLine($"Parse data for {ParseDeviceAddress(result.SourceAddress)}:");
+			ParseData(result);
+		}
+		private static void device1_DeviceDataContentReceived(object sender, ContentEventArgs args)
+		{
+			var result = args;
+			if (result == null || !result.Success) return;
+
+			Console.WriteLine($"Parse data for {ParseDeviceAddress(result.SourceAddress)}:");
+			ParseData(result);
+		}
+		private static void device2_DeviceDataContentReceived(object sender, ContentEventArgs args)
+		{
+			var result = args;
+			if (result == null || !result.Success) return;
+
+			Console.WriteLine($"Parse data for {ParseDeviceAddress(result.SourceAddress)}:");
+			ParseData(result);
+		}
+
+
+		private static string ParseDeviceAddress(DeviceAddress address)
+		{
+			return address.SubnetId + "." + address.DeviceId;
+		}
+
 
 
 		public static void TurnOffLightMediaroom(IBusproController busproController)

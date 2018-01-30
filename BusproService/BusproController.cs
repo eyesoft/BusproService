@@ -127,9 +127,7 @@ namespace BusproService
 		public void ReadBus()
 		{
 			var data = Receive();
-
-
-
+			
 			foreach (var device in Device)
 			{
 				var subnetId = device.DeviceAddress.SubnetId;
@@ -138,11 +136,10 @@ namespace BusproService
 				if (subnetId == data.SourceAddress.SubnetId && deviceId == data.SourceAddress.DeviceId)
 				{
 					OnReceiveDeviceData(data);
+					device.OnReceiveDeviceData(data);
 				}
 			}
-
-
-
+			
 			if (data != null) OnReceive(data);
 		}
 
