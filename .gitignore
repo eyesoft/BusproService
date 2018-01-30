@@ -4,7 +4,7 @@
 
 /.vs/BusproService/v15/
 /.vscode
-/BusproService/bin/
-/BusproService/obj/
-/TestConsoleApp/bin/
-/TestConsoleApp/obj/
+/BusproService/BusproService/bin/
+/BusproService/BusproService/obj/
+/BusproService/TestConsoleApp/bin/
+/BusproService/TestConsoleApp/obj/
