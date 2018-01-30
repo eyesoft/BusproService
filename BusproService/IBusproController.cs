@@ -6,7 +6,6 @@ namespace BusproService
 	public interface IBusproController
 	{
 		void ReadBus();
-		void ReadBus(DeviceType filterOnSourceDeviceType);
 		Device AddDevice(Device device);
 		Device GetDevice(DeviceAddress deviceAddress);
 

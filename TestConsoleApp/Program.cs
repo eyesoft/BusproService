@@ -25,10 +25,8 @@ namespace SmartHdlConsoleApp
 			using (var busproController = new BusproController(Ip, Port))
 			{
 				// listen to events for all content
-				//busproController.ContentReceived += busproController_ContentReceived;
-
-				// listen to events for devices added to controller
-				//busproController.DeviceDataContentReceived += busproController_ContentReceivedForDevice;
+				//busproController.DataReceived += BusproController_DataReceived;
+				busproController.Broadcast += BusproController_Broadcast;
 
 				// sender/source address and devicetype
 				busproController.SourceAddress = new DeviceAddress { DeviceId = SourceDeviceId, SubnetId = SourceSubnetId };
@@ -52,11 +50,11 @@ namespace SmartHdlConsoleApp
 				AddDevices(busproController);
 
 				// return all devices in controller
-				var devices = busproController.Device;
+				//var devices = busproController.Device;
 
 				// get specific device from controller
-				var logic = busproController.GetDevice(new DeviceAddress { SubnetId = 1, DeviceId = 100 });
-				Console.WriteLine(logic == null ? "Did not find Device\n" : "Found Device\n");
+				//var logic = busproController.GetDevice(new DeviceAddress { SubnetId = 1, DeviceId = 100 });
+				//Console.WriteLine(logic == null ? "Did not find Device\n" : "Found Device\n");
 
 				//logic.SendOperationCode()...
 
@@ -69,21 +67,18 @@ namespace SmartHdlConsoleApp
 
 		}
 
-		private static void busproController_ContentReceivedForDevice(object sender, ContentEventArgs args)
+
+		private static void BusproController_DataReceived(object sender, ContentEventArgs args)
 		{
-			var result = args;
-			if (result == null || !result.Success) return;
-
-			Console.WriteLine($"Received data for {ParseDeviceAddress(result.SourceAddress)}:");
-			ParseData(result);
-		}
-
-
-		private static void busproController_ContentReceived(object sender, ContentEventArgs args)
-		{
+			Console.WriteLine("Data received:");
 			ParseData(args);
 		}
 
+		private static void BusproController_Broadcast(object sender, ContentEventArgs args)
+		{
+			Console.WriteLine("Broadcast data received:");
+			ParseData(args);
+		}
 
 
 
@@ -154,18 +149,18 @@ namespace SmartHdlConsoleApp
 		{
 			// add device and listen to events for this device
 			var logic = (Logic)busproController.AddDevice(new Logic(1, 100));
-			logic.DeviceDataContentReceived += logic_DeviceDataContentReceived;
+			logic.DataReceived += Logic_DataReceived;
 
 			// add device and listen to events for this device
-			var device1 = busproController.AddDevice(new Device(1, 130));
-			device1.DeviceDataContentReceived += device1_DeviceDataContentReceived;
+			var device1 = busproController.AddDevice(new Device(1, 41));
+			device1.DataReceived += Device1_DataReceived;
 
-			// add device and listen to events for this device
-			var device2 = busproController.AddDevice(new Device(1, 131));
-			device2.DeviceDataContentReceived += device2_DeviceDataContentReceived;
+			//// add device and listen to events for this device
+			//var device2 = busproController.AddDevice(new Device(1, 131));
+			//device2.DataReceived += Device2_DataReceived;
 		}
 
-		private static void logic_DeviceDataContentReceived(object sender, ContentEventArgs args)
+		private static void Logic_DataReceived(object sender, ContentEventArgs args)
 		{
 			var result = args;
 			if (result == null || !result.Success) return;
@@ -173,7 +168,7 @@ namespace SmartHdlConsoleApp
 			Console.WriteLine($"Parse data for {ParseDeviceAddress(result.SourceAddress)}:");
 			ParseData(result);
 		}
-		private static void device1_DeviceDataContentReceived(object sender, ContentEventArgs args)
+		private static void Device1_DataReceived(object sender, ContentEventArgs args)
 		{
 			var result = args;
 			if (result == null || !result.Success) return;
@@ -181,7 +176,7 @@ namespace SmartHdlConsoleApp
 			Console.WriteLine($"Parse data for {ParseDeviceAddress(result.SourceAddress)}:");
 			ParseData(result);
 		}
-		private static void device2_DeviceDataContentReceived(object sender, ContentEventArgs args)
+		private static void Device2_DataReceived(object sender, ContentEventArgs args)
 		{
 			var result = args;
 			if (result == null || !result.Success) return;

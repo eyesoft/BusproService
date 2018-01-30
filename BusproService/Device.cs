@@ -14,28 +14,12 @@ namespace BusproService
 	{
 
 
-		//// Controller status changed event handler
-		//public delegate void OnReceiveEventHandler(object sender, ContentEventArgs args);
+		public delegate void OnDataReceivedEventHandler(object sender, ContentEventArgs args);
+		public event OnDataReceivedEventHandler DataReceived;
 
-		//// Occurs when controller status changed
-		//public event OnReceiveEventHandler ContentReceived;
-
-		//// Raises the controller status changed event
-		//protected virtual void OnReceive(ContentEventArgs args)
-		//{
-		//	ContentReceived?.Invoke(this, args);
-		//}
-
-
-
-
-
-		public delegate void OnReceiveDeviceDataEventHandler(object sender, ContentEventArgs args);
-		public event OnReceiveDeviceDataEventHandler DeviceDataContentReceived;
-
-		internal virtual void OnReceiveDeviceData(ContentEventArgs args)
+		internal virtual void OnDataReceived(ContentEventArgs args)
 		{
-			DeviceDataContentReceived?.Invoke(this, args);
+			DataReceived?.Invoke(this, args);
 		}
 
 

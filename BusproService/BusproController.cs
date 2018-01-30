@@ -19,21 +19,21 @@ namespace BusproService
 		public List<Device> Device { get; private set; }
 
 		// Controller status changed event handler
-		public delegate void OnReceiveEventHandler(object sender, ContentEventArgs args);
-		public delegate void OnReceiveDeviceDataEventHandler(object sender, ContentEventArgs args);
+		public delegate void OnDataReceivedEventHandler(object sender, ContentEventArgs args);
+		public delegate void OnBroadcastEventHandler(object sender, ContentEventArgs args);
 
 		// Occurs when controller status changed
-		public event OnReceiveEventHandler ContentReceived;
-		public event OnReceiveDeviceDataEventHandler DeviceDataContentReceived;
+		public event OnDataReceivedEventHandler DataReceived;
+		public event OnBroadcastEventHandler Broadcast;
 
 		// Raises the controller status changed event
-		protected virtual void OnReceive(ContentEventArgs args)
+		protected virtual void OnDataReceived(ContentEventArgs args)
 		{
-			ContentReceived?.Invoke(this, args);
+			DataReceived?.Invoke(this, args);
 		}
-		protected virtual void OnReceiveDeviceData(ContentEventArgs args)
+		protected virtual void OnBroadcast(ContentEventArgs args)
 		{
-			DeviceDataContentReceived?.Invoke(this, args);
+			Broadcast?.Invoke(this, args);
 		}
 
 
@@ -87,7 +87,7 @@ namespace BusproService
 		public Device AddDevice(Device device)
 		{
 			// Adds the device to the local list of added devices
-			// Device in this list will get their messages sent to the event handler OnReceiveDeviceData
+			// Device in this list will get their messages sent to the event handler OnDataReceived
 			// _devices.Add(device);
 
 			switch (device)
@@ -133,21 +133,27 @@ namespace BusproService
 				var subnetId = device.DeviceAddress.SubnetId;
 				var deviceId = device.DeviceAddress.DeviceId;
 
-				if (subnetId == data.SourceAddress.SubnetId && deviceId == data.SourceAddress.DeviceId)
+				if ((subnetId == data.SourceAddress.SubnetId && deviceId == data.SourceAddress.DeviceId) ||
+					(subnetId == data.TargetAddress.SubnetId && deviceId == data.TargetAddress.DeviceId))
 				{
-					OnReceiveDeviceData(data);
-					device.OnReceiveDeviceData(data);
+					device.OnDataReceived(data);
 				}
 			}
-			
-			if (data != null) OnReceive(data);
+
+			if ((255 == data.SourceAddress.SubnetId && 255 == data.SourceAddress.DeviceId) ||
+			    (255 == data.TargetAddress.SubnetId && 255 == data.TargetAddress.DeviceId))
+			{
+				OnBroadcast(data);
+			}
+
+			if (data != null) OnDataReceived(data);
 		}
 
-		public void ReadBus(DeviceType filterOnSourceDeviceType)
-		{
-			var data = Receive(filterOnSourceDeviceType);
-			if (data != null) OnReceive(data);
-		}
+		//public void ReadBus(DeviceType filterOnSourceDeviceType)
+		//{
+		//	var data = Receive(filterOnSourceDeviceType);
+		//	if (data != null) OnDataReceived(data);
+		//}
 
 
 
