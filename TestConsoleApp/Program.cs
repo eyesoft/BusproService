@@ -24,7 +24,6 @@ namespace SmartHdlConsoleApp
 		{
 			using (var busproController = new BusproController(Ip, Port))
 			{
-
 				// listen to events for all content
 				//busproController.ContentReceived += busproController_ContentReceived;
 
