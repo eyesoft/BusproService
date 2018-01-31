@@ -3,6 +3,10 @@ using BusproService.Enums;
 
 namespace BusproService
 {
+	public class Command : CommandEventArgs
+	{
+	}
+
 	public class CommandEventArgs: EventArgs
 	{
 		public bool Success;

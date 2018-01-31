@@ -73,7 +73,7 @@ namespace BusproService
 			additionalContent[2] = (byte)minutes;
 			additionalContent[3] = (byte)seconds;
 
-			var data = new CommandEventArgs
+			var data = new Command
 			{
 				AdditionalContent = additionalContent,
 				OperationCode = OperationCode.SingleChannelControl,
@@ -95,7 +95,7 @@ namespace BusproService
 			additionalContent[0] = (byte)switchId;
 			additionalContent[1] = (byte)switchState;
 
-			var data = new CommandEventArgs
+			var data = new Command
 			{
 				AdditionalContent = additionalContent,
 				OperationCode = OperationCode.UniversalSwitch,
@@ -112,7 +112,7 @@ namespace BusproService
 		{
 			if (additionalContent == null) additionalContent = new byte[0];
 
-			var data = new CommandEventArgs
+			var data = new Command
 			{
 				AdditionalContent = additionalContent,
 				OperationCode = operationCode,

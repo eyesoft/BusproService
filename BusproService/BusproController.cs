@@ -175,7 +175,7 @@ namespace BusproService
 
 
 
-		internal bool WriteBus(CommandEventArgs command)
+		internal bool WriteBus(Command command)
 		{
 			var result = Send(command);
 			return result.Success;
@@ -247,7 +247,7 @@ namespace BusproService
 
 
 
-		private SendResult Send(CommandEventArgs commandToSend)
+		private SendResult Send(Command commandToSend)
 		{
 			var result = new SendResult();
 
@@ -280,7 +280,7 @@ namespace BusproService
 
 
 
-		private CommandEventArgs Receive(DeviceType? filterOnSourceDeviceType = null)
+		private Command Receive(DeviceType? filterOnSourceDeviceType = null)
 		{
 			//if (_listener.Client == null) _listener = new UdpClient(_port);
 
@@ -304,7 +304,7 @@ namespace BusproService
 				//if (_filterOriginalDeviceId != null && (_filterOriginalDeviceId != hdlData.SourceDeviceId))
 				//	return null;
 
-				var cmd = new CommandEventArgs
+				var cmd = new Command
 				{
 					RawData = bytes,
 					SourceAddress = new DeviceAddress { DeviceId = bytes[indexOriginalDeviceId], SubnetId = bytes[indexOriginalSubnetId] },
@@ -332,11 +332,11 @@ namespace BusproService
 			}
 			catch (SocketException socketEx)
 			{
-				return new CommandEventArgs { Success = false, ErrorMessage = socketEx.Message, ErrorMessageSpecified = true };
+				return new Command { Success = false, ErrorMessage = socketEx.Message, ErrorMessageSpecified = true };
 			}
 			catch (Exception ex)
 			{
-				return new CommandEventArgs { Success = false, ErrorMessage = ex.Message, ErrorMessageSpecified = true };
+				return new Command { Success = false, ErrorMessage = ex.Message, ErrorMessageSpecified = true };
 			}
 		}
 
@@ -348,7 +348,7 @@ namespace BusproService
 
 
 
-		private byte[] BuildBufToSend(CommandEventArgs commandToSend)
+		private byte[] BuildBufToSend(Command commandToSend)
 		{
 			var content = commandToSend.AdditionalContent;
 			var length = 25 + content.Length + 2;

@@ -55,19 +55,25 @@ namespace SmartHdlConsoleApp
 
 		private static void BusproController_CommandReceived(object sender, CommandEventArgs args)
 		{
+			var result = (Command)args;
+			if (result == null || !result.Success) return;
+
 			Console.WriteLine("Command received:");
-			ParseData(args);
+			ParseData(result);
 		}
 
 		private static void BusproController_BroadcastCommandReceived(object sender, CommandEventArgs args)
 		{
+			var result = (Command)args;
+			if (result == null || !result.Success) return;
+
 			Console.WriteLine("Broadcast command received:");
-			ParseData(args);
+			ParseData(result);
 		}
 
 		private static void Logic_CommandReceived(object sender, CommandEventArgs args)
 		{
-			var result = args;
+			var result = (Command)args;
 			if (result == null || !result.Success) return;
 
 			Console.WriteLine($"Command received for {ParseDeviceAddress(result.SourceAddress)}:");
@@ -76,7 +82,7 @@ namespace SmartHdlConsoleApp
 
 		private static void Device1_CommandReceived(object sender, CommandEventArgs args)
 		{
-			var result = args;
+			var result = (Command)args;
 			if (result == null || !result.Success) return;
 
 			Console.WriteLine($"Command received for {ParseDeviceAddress(result.SourceAddress)}:");
@@ -85,7 +91,7 @@ namespace SmartHdlConsoleApp
 
 		private static void Device2_CommandReceived(object sender, CommandEventArgs args)
 		{
-			var result = args;
+			var result = (Command)args;
 			if (result == null || !result.Success) return;
 
 			Console.WriteLine($"Command received for {ParseDeviceAddress(result.SourceAddress)}:");
@@ -95,7 +101,7 @@ namespace SmartHdlConsoleApp
 
 
 
-		private static void ParseData(CommandEventArgs data)
+		private static void ParseData(Command data)
 		{
 			if (data == null || !data.Success) return;
 
