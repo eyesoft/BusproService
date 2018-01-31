@@ -1,0 +1,27 @@
+Function type		Parameter 1		Parameter 2		Parameter 3
+
+Scene Switch		Area Number 		Scene Number 		N/A
+Sequence Switch		Area Number 		Sequence Number 	N/A
+Universal Switch 	Switch Number		ON / OFF 		N/A
+Single Channel 		Channel Number		Brightness 0-100%	Fade time 0S - 60 M
+Curtain Switch		Switch Number		Stop / ON/ OFF 		N/A
+SMS 			Message 		Message SMS Number 	N/A
+Panel 			Invalid 		N/A 			N/A
+Panel 			IR Receiver 		ON / OFF 		N/A
+Panel 			Lock 			ON / OFF 		N/A
+Panel 			AC Power 		ON / OFF 		N/A
+Panel 			AC Cooling 		0-30 C , 32- 86F 	N/A
+Panel 			ACFan Speed 		Auto/high/med/slow 	N/A
+Panel 			AC Mode 		Auto/Cooling/Heating/FA N/A
+Panel 			AC Heating 		0-30 C , 32- 86F 	N/A
+Panel 			Rise temp 		1-5 C/F 		N/A
+Panel 			Reduse temp 		1-5 C/F 		N/A
+Panel 			LCD Backlit 		ON / OFF 		N/A
+Panel 			LCD status ligh 	1~100 			N/A
+Panel			Floor heating power	ON / OFF 		N/A
+Panel			Floor heating mode	Normal-day-night -away 	N/A
+Panel 			Goto page 		1~7 			N/A 
+Broadcast scene 	All Areas		Scene Number		N/A
+Broadcast Channel	ALL Channel 		Brightness 0-100%	Fade time 0S - 60 M  
+Security Module 	Area Number 		Arming Mode 		N/A
+

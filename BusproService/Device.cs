@@ -1,5 +1,5 @@
 ﻿using System;
-using BusproService.Data;
+using BusproService;
 using BusproService.Enums;
 
 namespace BusproService
@@ -14,12 +14,12 @@ namespace BusproService
 	{
 
 
-		public delegate void OnDataReceivedEventHandler(object sender, ContentEventArgs args);
-		public event OnDataReceivedEventHandler DataReceived;
+		public delegate void OnCommandReceivedEventHandler(object sender, CommandEventArgs args);
+		public event OnCommandReceivedEventHandler CommandReceived;
 
-		internal virtual void OnDataReceived(ContentEventArgs args)
+		internal virtual void OnCommandReceived(CommandEventArgs args)
 		{
-			DataReceived?.Invoke(this, args);
+			CommandReceived?.Invoke(this, args);
 		}
 
 
@@ -73,7 +73,7 @@ namespace BusproService
 			additionalContent[2] = (byte)minutes;
 			additionalContent[3] = (byte)seconds;
 
-			var data = new ContentEventArgs
+			var data = new CommandEventArgs
 			{
 				AdditionalContent = additionalContent,
 				OperationCode = OperationCode.SingleChannelControl,
@@ -95,7 +95,7 @@ namespace BusproService
 			additionalContent[0] = (byte)switchId;
 			additionalContent[1] = (byte)switchState;
 
-			var data = new ContentEventArgs
+			var data = new CommandEventArgs
 			{
 				AdditionalContent = additionalContent,
 				OperationCode = OperationCode.UniversalSwitch,
@@ -112,7 +112,7 @@ namespace BusproService
 		{
 			if (additionalContent == null) additionalContent = new byte[0];
 
-			var data = new ContentEventArgs
+			var data = new CommandEventArgs
 			{
 				AdditionalContent = additionalContent,
 				OperationCode = operationCode,

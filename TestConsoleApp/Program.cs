@@ -1,13 +1,6 @@
-﻿// https://github.com/genielabs/zwave-lib-dotnet
-// https://github.com/caligo-mentis/smart-bus
-
-using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
+﻿using System;
 using System.Text;
-using System.Threading;
 using BusproService;
-using BusproService.Data;
 using BusproService.Enums;
 
 namespace SmartHdlConsoleApp
@@ -24,24 +17,16 @@ namespace SmartHdlConsoleApp
 		{
 			using (var busproController = new BusproController(Ip, Port))
 			{
-				// listen to events for all content
-				//busproController.DataReceived += BusproController_DataReceived;
-				busproController.Broadcast += BusproController_Broadcast;
+				// listen to events for all commands across bus
+				busproController.CommandReceived += BusproController_CommandReceived;
+
+				// listen to broadcast commands across bus
+				busproController.BroadcastCommandReceived += BusproController_BroadcastCommandReceived;
 
 				// sender/source address and devicetype
 				busproController.SourceAddress = new DeviceAddress { DeviceId = SourceDeviceId, SubnetId = SourceSubnetId };
 				busproController.SourceDeviceType = SourceDeviceType;
-
-				// creates new background thread
-				new Thread(() =>
-				{
-					Thread.CurrentThread.IsBackground = true;
-					while (true)
-					{
-						// Reads all data on bus
-						busproController.ReadBus();
-					}
-				}).Start();
+				busproController.StartListen();
 
 				Console.WriteLine($"Gateway address set to {busproController.Address}:{busproController.Port}");
 				Console.WriteLine("Press enter to close...\n");
@@ -68,45 +53,71 @@ namespace SmartHdlConsoleApp
 		}
 
 
-		private static void BusproController_DataReceived(object sender, ContentEventArgs args)
+		private static void BusproController_CommandReceived(object sender, CommandEventArgs args)
 		{
-			Console.WriteLine("Data received:");
+			Console.WriteLine("Command received:");
 			ParseData(args);
 		}
 
-		private static void BusproController_Broadcast(object sender, ContentEventArgs args)
+		private static void BusproController_BroadcastCommandReceived(object sender, CommandEventArgs args)
 		{
-			Console.WriteLine("Broadcast data received:");
+			Console.WriteLine("Broadcast command received:");
 			ParseData(args);
 		}
 
-
-
-		private static void ParseData(ContentEventArgs data)
+		private static void Logic_CommandReceived(object sender, CommandEventArgs args)
 		{
-			var result = data;
-
+			var result = args;
 			if (result == null || !result.Success) return;
+
+			Console.WriteLine($"Command received for {ParseDeviceAddress(result.SourceAddress)}:");
+			ParseData(result);
+		}
+
+		private static void Device1_CommandReceived(object sender, CommandEventArgs args)
+		{
+			var result = args;
+			if (result == null || !result.Success) return;
+
+			Console.WriteLine($"Command received for {ParseDeviceAddress(result.SourceAddress)}:");
+			ParseData(result);
+		}
+
+		private static void Device2_CommandReceived(object sender, CommandEventArgs args)
+		{
+			var result = args;
+			if (result == null || !result.Success) return;
+
+			Console.WriteLine($"Command received for {ParseDeviceAddress(result.SourceAddress)}:");
+			ParseData(result);
+		}
+
+
+
+
+		private static void ParseData(CommandEventArgs data)
+		{
+			if (data == null || !data.Success) return;
 
 			var sb = new StringBuilder("");
 
-			var errorMessage = result.ErrorMessage;
-			var success = result.Success;
+			var errorMessage = data.ErrorMessage;
+			var success = data.Success;
 
-			var b = result.AdditionalContent;
+			var b = data.AdditionalContent;
 			var t = BusproController.ByteArrayToText(b);
 
-			var sd = result.SourceAddress.DeviceId;
-			var ss = result.SourceAddress.SubnetId;
+			var sd = data.SourceAddress.DeviceId;
+			var ss = data.SourceAddress.SubnetId;
 
-			var td = result.TargetAddress.DeviceId;
-			var ts = result.TargetAddress.SubnetId;
+			var td = data.TargetAddress.DeviceId;
+			var ts = data.TargetAddress.SubnetId;
 
-			var o = result.OperationCode;
-			var oHex = result.OperationCodeHex;
+			var o = data.OperationCode;
+			var oHex = data.OperationCodeHex;
 
-			var dt = result.SourceDeviceType;
-			var dtHex = result.SourceDeviceTypeHex;
+			var dt = data.SourceDeviceType;
+			var dtHex = data.SourceDeviceTypeHex;
 
 			sb.Append($"Success: \t\t{success}");
 
@@ -129,8 +140,6 @@ namespace SmartHdlConsoleApp
 					sb.Append($"Set temperature: \t{b[4]}\n");
 					sb.Append($"Current temperature: \t{b[1]}\n");
 				}
-
-
 			}
 			else
 			{
@@ -139,52 +148,7 @@ namespace SmartHdlConsoleApp
 
 			Console.WriteLine(sb.ToString());
 			Console.WriteLine("");
-
 		}
-
-
-
-
-		public static void AddDevices(IBusproController busproController)
-		{
-			// add device and listen to events for this device
-			var logic = (Logic)busproController.AddDevice(new Logic(1, 100));
-			logic.DataReceived += Logic_DataReceived;
-
-			// add device and listen to events for this device
-			var device1 = busproController.AddDevice(new Device(1, 41));
-			device1.DataReceived += Device1_DataReceived;
-
-			//// add device and listen to events for this device
-			//var device2 = busproController.AddDevice(new Device(1, 131));
-			//device2.DataReceived += Device2_DataReceived;
-		}
-
-		private static void Logic_DataReceived(object sender, ContentEventArgs args)
-		{
-			var result = args;
-			if (result == null || !result.Success) return;
-
-			Console.WriteLine($"Parse data for {ParseDeviceAddress(result.SourceAddress)}:");
-			ParseData(result);
-		}
-		private static void Device1_DataReceived(object sender, ContentEventArgs args)
-		{
-			var result = args;
-			if (result == null || !result.Success) return;
-
-			Console.WriteLine($"Parse data for {ParseDeviceAddress(result.SourceAddress)}:");
-			ParseData(result);
-		}
-		private static void Device2_DataReceived(object sender, ContentEventArgs args)
-		{
-			var result = args;
-			if (result == null || !result.Success) return;
-
-			Console.WriteLine($"Parse data for {ParseDeviceAddress(result.SourceAddress)}:");
-			ParseData(result);
-		}
-
 
 		private static string ParseDeviceAddress(DeviceAddress address)
 		{
@@ -193,7 +157,24 @@ namespace SmartHdlConsoleApp
 
 
 
-		public static void TurnOffLightMediaroom(IBusproController busproController)
+
+
+		private static void AddDevices(IBusproController busproController)
+		{
+			// add logic device and listen to events for this device
+			var logic = busproController.AddDevice(new Logic(1, 100));
+			logic.CommandReceived += Logic_CommandReceived;
+
+			// add generic device and listen to events for this device
+			var device1 = busproController.AddDevice(new Device(1, 41));
+			device1.CommandReceived += Device1_CommandReceived;
+
+			// add generic device and listen to events for this device
+			//var device2 = busproController.AddDevice(new Device(1, 131));
+			//device2.CommandReceived += Device2_CommandReceived;
+		}
+
+		private static void TurnOffLightMediaroom(IBusproController busproController)
 		{
 			try
 			{
@@ -208,8 +189,7 @@ namespace SmartHdlConsoleApp
 			}
 		}
 
-
-		public static void QueryDlp(IBusproController busproController)
+		private static void QueryDlp(IBusproController busproController)
 		{
 			try
 			{
@@ -231,10 +211,8 @@ namespace SmartHdlConsoleApp
 				20	temperature.day
 				20	temperature.night
 				20	temperature.away
-									??temperature.timer
+						temperature.timer
 				*/
-
-
 
 				//var dlpStue = (Dlp)busproController.AddDevice(new Dlp(1, 21));
 				//var ok = dlpStue.ReadAcCurrentState();
@@ -243,7 +221,6 @@ namespace SmartHdlConsoleApp
 				//var dlpBad = (Dlp)busproController.AddDevice(new Dlp(1, 17));
 				//ok = dlpBad.ReadAcCurrentState();
 				//Console.WriteLine($"Bad..ReadAcCurrentState(): {ok}\n\n");
-
 			}
 			catch (Exception ex)
 			{

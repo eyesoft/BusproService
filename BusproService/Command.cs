@@ -1,9 +1,9 @@
 ﻿using System;
 using BusproService.Enums;
 
-namespace BusproService.Data
+namespace BusproService
 {
-	public class ContentEventArgs: EventArgs
+	public class CommandEventArgs: EventArgs
 	{
 		public bool Success;
 		public bool ErrorMessageSpecified;

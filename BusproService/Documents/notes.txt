@@ -1,22 +1,4 @@
-﻿ToDo:
-
-- Implementere Callback ved funksjonskall
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	/* PATTERNS OPERATECODE
+﻿	/* PATTERNS OPERATECODE
 	 * 
 	 * SingleChannelLightingControl = 0x0031
 	 *		ChannelNo, Intensity, RunningTimeMinutes, RunningTimeSeconds													(Length=4)

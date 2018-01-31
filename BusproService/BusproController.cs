@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using BusproService.Data;
+using System.Threading;
 using BusproService.Enums;
 using BusproService.Helper;
 
@@ -13,27 +13,27 @@ namespace BusproService
 	public class BusproController : IBusproController, IDisposable
 	{
 
-		// Skip sending data to bus
+		// Skip sending command to bus
 		private const bool SkipSocketSend = false;
 
 		public List<Device> Device { get; private set; }
 
 		// Controller status changed event handler
-		public delegate void OnDataReceivedEventHandler(object sender, ContentEventArgs args);
-		public delegate void OnBroadcastEventHandler(object sender, ContentEventArgs args);
+		public delegate void OnCommandReceivedEventHandler(object sender, CommandEventArgs args);
+		public delegate void OnBroadcastCommandReceivedEventHandler(object sender, CommandEventArgs args);
 
 		// Occurs when controller status changed
-		public event OnDataReceivedEventHandler DataReceived;
-		public event OnBroadcastEventHandler Broadcast;
+		public event OnCommandReceivedEventHandler CommandReceived;
+		public event OnBroadcastCommandReceivedEventHandler BroadcastCommandReceived;
 
 		// Raises the controller status changed event
-		protected virtual void OnDataReceived(ContentEventArgs args)
+		protected virtual void OnCommandReceived(CommandEventArgs args)
 		{
-			DataReceived?.Invoke(this, args);
+			CommandReceived?.Invoke(this, args);
 		}
-		protected virtual void OnBroadcast(ContentEventArgs args)
+		protected virtual void OnBroadcastCommandReceived(CommandEventArgs args)
 		{
-			Broadcast?.Invoke(this, args);
+			BroadcastCommandReceived?.Invoke(this, args);
 		}
 
 
@@ -46,6 +46,7 @@ namespace BusproService
 		public DeviceType SourceDeviceType { get; set; }
 		public int Port { get; }
 		public IPAddress Address { get; }
+
 
 
 
@@ -87,7 +88,7 @@ namespace BusproService
 		public Device AddDevice(Device device)
 		{
 			// Adds the device to the local list of added devices
-			// Device in this list will get their messages sent to the event handler OnDataReceived
+			// Device in this list will get their messages sent to the event handler OnCommandReceived
 			// _devices.Add(device);
 
 			switch (device)
@@ -117,50 +118,66 @@ namespace BusproService
 
 
 
-
-		//var result = busproService.ReadBus(new DeviceAddress { DeviceId = 40, SubnetId = 1 });
-		//var result = busproService.ReadBus(DeviceType.PIR_12in1);
-		//var result = busproService.ReadBus(OperationCode.CurrentDateTime);
-		//var result = busproService.ReadBus(DeviceType.LOGIC_Logic960, OperationCode.CurrentDateTime);
-		//var result = busproService.ReadBus(new Dimmer(DeviceType.LOGIC_Logic960, new DeviceAddress { SubnetId = 1, DeviceId = 100 }, 5));
-
-		public void ReadBus()
+		public void StartListen()
 		{
-			var data = Receive();
-			
+			new Thread(() =>
+			{
+				Thread.CurrentThread.IsBackground = true;
+				while (true)
+				{
+					// Reads all commands on bus
+					ReadBus();
+				}
+			}).Start();
+		}
+
+		private void StopListen()
+		{
+			// CancellationToken
+		}
+
+
+
+		private void ReadBus()
+		{
+			var cmd = Receive();
+
 			foreach (var device in Device)
 			{
 				var subnetId = device.DeviceAddress.SubnetId;
 				var deviceId = device.DeviceAddress.DeviceId;
 
-				if ((subnetId == data.SourceAddress.SubnetId && deviceId == data.SourceAddress.DeviceId) ||
-					(subnetId == data.TargetAddress.SubnetId && deviceId == data.TargetAddress.DeviceId))
+				if ((subnetId == cmd.SourceAddress.SubnetId && deviceId == cmd.SourceAddress.DeviceId) ||
+					(subnetId == cmd.TargetAddress.SubnetId && deviceId == cmd.TargetAddress.DeviceId))
 				{
-					device.OnDataReceived(data);
+					device.OnCommandReceived(cmd);
 				}
 			}
 
-			if ((255 == data.SourceAddress.SubnetId && 255 == data.SourceAddress.DeviceId) ||
-			    (255 == data.TargetAddress.SubnetId && 255 == data.TargetAddress.DeviceId))
+			const int broadcastSubnetId = 255;
+			const int broadcastDeviceId = 255;
+
+			if ((broadcastSubnetId == cmd.SourceAddress.SubnetId && broadcastDeviceId == cmd.SourceAddress.DeviceId) ||
+					(broadcastSubnetId == cmd.TargetAddress.SubnetId && broadcastDeviceId == cmd.TargetAddress.DeviceId))
 			{
-				OnBroadcast(data);
+				OnBroadcastCommandReceived(cmd);
 			}
 
-			if (data != null) OnDataReceived(data);
+			OnCommandReceived(cmd);
 		}
 
 		//public void ReadBus(DeviceType filterOnSourceDeviceType)
 		//{
-		//	var data = Receive(filterOnSourceDeviceType);
-		//	if (data != null) OnDataReceived(data);
+		//	var command = Receive(filterOnSourceDeviceType);
+		//	if (command != null) OnCommandReceived(command);
 		//}
 
 
 
 
-		internal bool WriteBus(ContentEventArgs data)
+		internal bool WriteBus(CommandEventArgs command)
 		{
-			var result = Send(data);
+			var result = Send(command);
 			return result.Success;
 		}
 
@@ -230,27 +247,27 @@ namespace BusproService
 
 
 
-		private SendResult Send(ContentEventArgs dataToSend)
+		private SendResult Send(CommandEventArgs commandToSend)
 		{
 			var result = new SendResult();
 
 			try
 			{
-				if (dataToSend == null) //throw new InvalidOperationException("No data to send");
-					return new SendResult { Success = false, ErrorMessageSpecified = true, ErrorMessage = "No data to send" };
+				if (commandToSend == null) //throw new InvalidOperationException("No command to send");
+					return new SendResult { Success = false, ErrorMessageSpecified = true, ErrorMessage = "No command to send" };
 
-				if (dataToSend.SourceAddress == null) dataToSend.SourceAddress = new DeviceAddress { SubnetId = 0, DeviceId = 0 };
+				if (commandToSend.SourceAddress == null) commandToSend.SourceAddress = new DeviceAddress { SubnetId = 0, DeviceId = 0 };
 
 				var s = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
 
 				//var sendbuf = GetTestBufToSend();
-				var sendbuf = BuildBufToSend(dataToSend);
+				var sendbuf = BuildBufToSend(commandToSend);
 
 				if (!SkipSocketSend)
 					s.SendTo(sendbuf, EndPoint);
 
 				//var hex = ByteArrayToHex(sendbuf);
-				result.DataSent = sendbuf;
+				result.CommandSent = sendbuf;
 				result.Success = true;
 			}
 			catch (Exception ex)
@@ -263,7 +280,7 @@ namespace BusproService
 
 
 
-		private ContentEventArgs Receive(DeviceType? filterOnSourceDeviceType = null)
+		private CommandEventArgs Receive(DeviceType? filterOnSourceDeviceType = null)
 		{
 			//if (_listener.Client == null) _listener = new UdpClient(_port);
 
@@ -287,7 +304,7 @@ namespace BusproService
 				//if (_filterOriginalDeviceId != null && (_filterOriginalDeviceId != hdlData.SourceDeviceId))
 				//	return null;
 
-				var data = new ContentEventArgs
+				var cmd = new CommandEventArgs
 				{
 					RawData = bytes,
 					SourceAddress = new DeviceAddress { DeviceId = bytes[indexOriginalDeviceId], SubnetId = bytes[indexOriginalSubnetId] },
@@ -298,7 +315,7 @@ namespace BusproService
 					Success = true
 				};
 
-				if (filterOnSourceDeviceType != null && filterOnSourceDeviceType != data.SourceDeviceType)
+				if (filterOnSourceDeviceType != null && filterOnSourceDeviceType != cmd.SourceDeviceType)
 					return null;
 
 				// CRC verification code
@@ -306,20 +323,20 @@ namespace BusproService
 				var crcL = bytes[bytes.Length - 1];
 				var calculatedChecksum = CalculateChecksum(bytes);
 
-				if (crcH == calculatedChecksum.CrcHigh && crcL == calculatedChecksum.CrcLow) return data;
+				if (crcH == calculatedChecksum.CrcHigh && crcL == calculatedChecksum.CrcLow) return cmd;
 
-				data.Success = false;
-				data.ErrorMessageSpecified = true;
-				data.ErrorMessage = "Checksum error";
-				return data;
+				cmd.Success = false;
+				cmd.ErrorMessageSpecified = true;
+				cmd.ErrorMessage = "Checksum error";
+				return cmd;
 			}
 			catch (SocketException socketEx)
 			{
-				return new ContentEventArgs { Success = false, ErrorMessage = socketEx.Message, ErrorMessageSpecified = true };
+				return new CommandEventArgs { Success = false, ErrorMessage = socketEx.Message, ErrorMessageSpecified = true };
 			}
 			catch (Exception ex)
 			{
-				return new ContentEventArgs { Success = false, ErrorMessage = ex.Message, ErrorMessageSpecified = true };
+				return new CommandEventArgs { Success = false, ErrorMessage = ex.Message, ErrorMessageSpecified = true };
 			}
 		}
 
@@ -331,9 +348,9 @@ namespace BusproService
 
 
 
-		private byte[] BuildBufToSend(ContentEventArgs dataToSend)
+		private byte[] BuildBufToSend(CommandEventArgs commandToSend)
 		{
-			var content = dataToSend.AdditionalContent;
+			var content = commandToSend.AdditionalContent;
 			var length = 25 + content.Length + 2;
 			var sendbuf = new byte[length];
 
@@ -360,15 +377,15 @@ namespace BusproService
 
 			var lengthOfDataPackage = 11 + content.Length;
 
-			var senderSubnetId = dataToSend.SourceAddress.SubnetId;
-			var senderDeviceId = dataToSend.SourceAddress.DeviceId;
-			var senderDeviceType = dataToSend.SourceDeviceTypeBytes ?? DeviceTypeToByteArray(dataToSend.SourceDeviceType);
-			var operationCode = dataToSend.OperationCodeBytes ?? OperationCodeToByteArray(dataToSend.OperationCode);
-			var targetSubnetId = dataToSend.TargetAddress.SubnetId;
-			var targetDeviceId = dataToSend.TargetAddress.DeviceId;
+			var senderSubnetId = commandToSend.SourceAddress.SubnetId;
+			var senderDeviceId = commandToSend.SourceAddress.DeviceId;
+			var senderDeviceType = commandToSend.SourceDeviceTypeBytes ?? DeviceTypeToByteArray(commandToSend.SourceDeviceType);
+			var operationCode = commandToSend.OperationCodeBytes ?? OperationCodeToByteArray(commandToSend.OperationCode);
+			var targetSubnetId = commandToSend.TargetAddress.SubnetId;
+			var targetDeviceId = commandToSend.TargetAddress.DeviceId;
 
-			// Start data
-			sendbuf[16] = (byte)lengthOfDataPackage;  // 15 Length of data package
+			// Start command
+			sendbuf[16] = (byte)lengthOfDataPackage;  // 15 Length of command package
 			sendbuf[17] = (byte)senderSubnetId;       // 1 Original subnet id
 			sendbuf[18] = (byte)senderDeviceId;       // 23 Original device id
 			sendbuf[19] = senderDeviceType[0];        // 0 Original device type
@@ -380,7 +397,7 @@ namespace BusproService
 
 			for (var i = 0; i < content.Length; i++)  // 1 content
 				sendbuf[i + 25] = content[i];
-			// End data
+			// End command
 
 			var calculatedChecksum = CalculateChecksum(sendbuf);
 			sendbuf[sendbuf.Length - 2] = calculatedChecksum.CrcHigh;
@@ -436,7 +453,7 @@ namespace BusproService
 			sendbuf[14] = 170;  // Leading code
 			sendbuf[15] = 170;  // Leading code
 
-			sendbuf[16] = 15;   // Length of data package
+			sendbuf[16] = 15;   // Length of command package
 			sendbuf[17] = 1;    // Original subnet id
 			sendbuf[18] = 23;   // Original device id
 			sendbuf[19] = 0;    // Original device type
@@ -668,7 +685,7 @@ namespace BusproService
 
 		//public bool Submit(AddDevice device, OperationCode operationCode, byte[] additionalContent)
 		//{
-		//	var dataToSend = new BusproData();
+		//	var commandToSend = new BusproData();
 		//	var deviceType = device.DeviceType;
 		//	var deviceAddress = device.DeviceAddress;
 
@@ -707,13 +724,13 @@ namespace BusproService
 		//		//}
 		//	}
 
-		//	dataToSend.OperationCode = OperationCodeToByteArray(operationCode);
-		//	dataToSend.AdditionalContent = additionalContent;
-		//	dataToSend.SourceDeviceType = deviceType;
-		//	dataToSend.TargetAddress = deviceAddress;
+		//	commandToSend.OperationCode = OperationCodeToByteArray(operationCode);
+		//	commandToSend.AdditionalContent = additionalContent;
+		//	commandToSend.SourceDeviceType = deviceType;
+		//	commandToSend.TargetAddress = deviceAddress;
 
-		//	dataToSend = null;
-		//	var result = Send(dataToSend);
+		//	commandToSend = null;
+		//	var result = Send(commandToSend);
 
 		//	if (result.Success)
 		//	{
@@ -735,7 +752,7 @@ namespace BusproService
 		public bool Success;
 		public string ErrorMessage;
 		public bool ErrorMessageSpecified;
-		public byte[] DataSent;
+		public byte[] CommandSent;
 	}
 
 }
