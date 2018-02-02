@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using BusproService.Enums;
 
 namespace BusproService
@@ -80,12 +81,18 @@ namespace BusproService
 
 	public class SingleChannelControl
 	{
-	
+		public int ChannelNo;
+		public int ChannelLevel;
+		public int RunningTimeSeconds;
 	}
 
 	public class SingleChannelControlResponse
 	{
-
+		public int ChannelNo { get; internal set; }
+		public SuccessOrFailure SuccessOrFail { get; internal set; }
+		public int ChannelLevel { get; internal set; }
+		public int NoChannels { get; internal set; }
+		public Dictionary<int, Channel.Status> ChannelStatus { get; internal set; }
 	}
 
 	public class BroadcastTemperature

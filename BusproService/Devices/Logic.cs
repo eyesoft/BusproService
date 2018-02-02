@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using BusproService.Enums;
+﻿using BusproService.Enums;
 
 namespace BusproService.Devices
 {

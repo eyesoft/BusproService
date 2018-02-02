@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using BusproService.Enums;
 
 namespace BusproService.Devices
@@ -36,10 +34,10 @@ namespace BusproService.Devices
 			return SingleChannelControl(channel, intensity, seconds);
 		}
 
-		public bool SingleChannelControl(int channel, ChannelState channelState)
+		public bool SingleChannelControl(int channel, Channel.State channelState)
 		{
 			var intensity = 0;
-			if (channelState == ChannelState.On) intensity = 100;
+			if (channelState == Enums.Channel.State.On) intensity = 100;
 			return SingleChannelControl(channel, intensity, 0);
 		}
 
@@ -53,7 +51,7 @@ namespace BusproService.Devices
 			return SingleChannelControl(Channel, intensity, secondsRunningtime);
 		}
 
-		public bool SingleChannelControl(ChannelState channelState)
+		public bool SingleChannelControl(Channel.State channelState)
 		{
 			return SingleChannelControl(Channel, channelState);
 		}

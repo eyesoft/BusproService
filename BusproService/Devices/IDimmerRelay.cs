@@ -9,10 +9,10 @@ namespace BusproService.Devices
 	{
 		bool SingleChannelControl(int channel, int intensity, int secondsRunningtime);
 		bool SingleChannelControl(int channel, int intensity, TimeSpan secondsRunningtime);
-		bool SingleChannelControl(int channel, ChannelState channelState);
+		bool SingleChannelControl(int channel, Channel.State channelState);
 		bool SingleChannelControl(int intensity, int secondsRunningtime);
 		bool SingleChannelControl(int intensity, TimeSpan secondsRunningtime);
-		bool SingleChannelControl(ChannelState channelState);
+		bool SingleChannelControl(Channel.State channelState);
 		int Channel { get; set; }
 	}
 }

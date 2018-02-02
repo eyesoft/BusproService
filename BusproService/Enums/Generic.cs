@@ -1,16 +1,29 @@
 ﻿namespace BusproService.Enums
 {
-	public enum ChannelState
-	{
-		Off = 0,
-		On = 100
-	}
 
-	public enum Status
+	public enum SuccessOrFailure
 	{
 		Success = 0xF8,
 		Failure = 0xF5
 	}
+
+
+
+	public class Channel
+	{
+		public enum State
+		{
+			Off = 0,
+			On = 100
+		}
+
+		public enum Status
+		{
+			Off = 0,
+			On = 1
+		}
+	}
+
 
 	public class Temperature
 	{

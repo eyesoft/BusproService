@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using BusproService.Enums;
 
 namespace BusproService
@@ -91,7 +90,7 @@ namespace BusproService
 			return result;
 		}
 
-		public bool UniversalSwitch(int switchId, ChannelState switchState)
+		public bool UniversalSwitch(int switchId, Channel.State switchState)
 		{
 			if (switchId == 0) throw new InvalidOperationException("SwitchId not set");
 			if (switchId < 1 || switchId > 255) throw new InvalidOperationException($"Invalid SwitchId {switchId}");

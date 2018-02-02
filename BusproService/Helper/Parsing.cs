@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using BusproService.Enums;
+using BusproService.Helper;
 
 namespace BusproService
 {
-	internal class Parsing
+	public class Parsing : IParsing
 	{
 
 		public static OperationCode ParseOperationCode(string operateCodeHex)
@@ -69,17 +72,36 @@ namespace BusproService
 
 
 
-		
 
-		public static SingleChannelControl  ParseSingleChannelControl(CommandEventArgs command)
+
+		public static SingleChannelControl ParseSingleChannelControl(CommandEventArgs command)
 		{
 			if (command?.OperationCode != OperationCode.SingleChannelControl) return null;
-			if (command.AdditionalContent?.Length < 8) return null;
+			if (command.AdditionalContent?.Length < 4) return null;
 			var additionalContent = command.AdditionalContent;
+			if (additionalContent == null) return null;
 
 			try
 			{
-				return null;
+				//var seconds = 100;
+				//var secondsHigh = seconds / 256;
+				//var secondsLow = seconds % 256;
+				//var newSeconds = secondsHigh * 256 + secondsLow;
+
+				var secondsHigh = additionalContent[2];
+				var secondsLow = additionalContent[3];
+				var seconds = secondsHigh * 256 + secondsLow;
+				var channelLevel = additionalContent[1];
+				if (channelLevel > 100) channelLevel = 100;
+
+				var result = new SingleChannelControl
+				{
+					ChannelNo = additionalContent[0],
+					ChannelLevel = channelLevel,
+					RunningTimeSeconds = seconds
+				};
+
+				return result;
 			}
 			catch (Exception ex)
 			{
@@ -91,12 +113,36 @@ namespace BusproService
 		public static SingleChannelControlResponse ParseSingleChannelControlResponse(CommandEventArgs command)
 		{
 			if (command?.OperationCode != OperationCode.SingleChannelControlResponse) return null;
-			if (command.AdditionalContent?.Length < 8) return null;
+			if (command.AdditionalContent?.Length < 5) return null;
 			var additionalContent = command.AdditionalContent;
+			if (additionalContent == null) return null;
 
 			try
 			{
-				return null;
+				// Limited to 8 channels
+
+				var channelStatus = new Dictionary<int, Channel.Status>();
+				var channelStatusBinaryString = Convert.ToString(additionalContent[4], 2).PadLeft(8, '0');
+				var noChannels = additionalContent[3];
+
+				var channelNo = 1;
+				for (var i = channelStatusBinaryString.Length - 1; i >= 0; i--)
+				{
+					if (channelNo > noChannels) break;
+					channelStatus.Add(channelNo, (Channel.Status)int.Parse(channelStatusBinaryString[i].ToString()));
+					channelNo++;
+				}
+				
+				var result = new SingleChannelControlResponse
+				{
+					ChannelNo = additionalContent[0],
+					SuccessOrFail = (SuccessOrFailure)additionalContent[1],
+					ChannelLevel = additionalContent[2],
+					NoChannels = additionalContent[3],
+					ChannelStatus = channelStatus
+				};
+
+				return result;
 			}
 			catch (Exception ex)
 			{

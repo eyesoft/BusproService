@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using BusproService;
 using BusproService.Devices;
@@ -18,6 +19,27 @@ namespace SmartHdlConsoleApp
 		{
 			using (var busproController = new BusproController(Ip, Port))
 			{
+
+				var antChannels = 6;
+				var channelStatusBinaryString = "00001010";
+
+
+				var dict = new Dictionary<int, Channel.Status>();
+
+
+
+				var channelNo = 1;
+				for (var i = channelStatusBinaryString.Length - 1; i >= 0; i--)
+				{
+					if (channelNo > antChannels) break;
+					dict.Add(channelNo, (Channel.Status)int.Parse(channelStatusBinaryString[i].ToString()));
+					channelNo++;
+				}
+
+
+
+
+
 				// listen to events for all commands across bus
 				busproController.CommandReceived += BusproController_CommandReceived;
 
@@ -152,6 +174,18 @@ namespace SmartHdlConsoleApp
 				{
 					sb.Append($"Current temperatur: \t{b[1]}\n");
 				}
+
+				if (o == OperationCode.SingleChannelControl)
+				{
+					sb.Append(Newtonsoft.Json.JsonConvert.SerializeObject(Parsing.ParseSingleChannelControl(data)));
+				}
+
+				if (o == OperationCode.SingleChannelControlResponse)
+				{
+					sb.Append(Newtonsoft.Json.JsonConvert.SerializeObject(Parsing.ParseSingleChannelControlResponse(data)));
+				}
+
+
 			}
 			else
 			{
