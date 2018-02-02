@@ -65,7 +65,7 @@ namespace BusproService
 		internal byte[] SourceDeviceTypeBytes;
 	}
 
-	public class FloorHeatingStatus
+	public class ReadFloorHeatingStatusResponse
 	{
 		public Temperature.Type TemperatureType { get; set; }
 		public int CurrentTemperature { get; internal set; }
@@ -76,6 +76,56 @@ namespace BusproService
 		public int TemperatureNight { get; set; }
 		public int TemperatureAway { get; set; }
 		//public TemperatureTimer TemperatureTimer { get; internal set; }
+	}
+
+	public class SingleChannelControl
+	{
+	
+	}
+
+	public class SingleChannelControlResponse
+	{
+
+	}
+
+	public class BroadcastTemperature
+	{
+
+	}
+
+	public class BroadcastSensorsStatus
+	{
+
+	}
+
+	public class BroadcastStatusOfScene
+	{
+
+	}
+
+	public class BroadcastSystemDateTime
+	{
+
+	}
+
+	public class UniversalSwitchControl
+	{
+
+	}
+
+	public class UniversalSwitchControlResponse
+	{
+
+	}
+
+	public class SceneControl
+	{
+
+	}
+
+	public class SceneControlResponse
+	{
+
 	}
 
 }

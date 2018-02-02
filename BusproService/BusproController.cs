@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using BusproService.Devices;
 using BusproService.Enums;
 using BusproService.Helper;
 
@@ -486,33 +487,6 @@ namespace BusproService
 
 
 
-		private static OperationCode ParseOperationCode(string operateCodeHex)
-		{
-			if (string.IsNullOrEmpty(operateCodeHex)) return OperationCode.NotSet;
-
-			operateCodeHex = operateCodeHex.Replace("-", "");
-			var operateCodeId = int.Parse(operateCodeHex, NumberStyles.HexNumber).ToString(CultureInfo.InvariantCulture);
-			var operateCode = (OperationCode)Enum.Parse(typeof(OperationCode), operateCodeId);
-
-			if (!Enum.IsDefined(typeof(OperationCode), operateCode))
-				operateCode = OperationCode.NotSet;
-
-			return operateCode;
-		}
-
-		private static DeviceType ParseDeviceType(string deviceTypeHex)
-		{
-			if (string.IsNullOrEmpty(deviceTypeHex)) return DeviceType.UnknownDevice;
-
-			deviceTypeHex = deviceTypeHex.Replace("-", "");
-			var deviceTypeId = int.Parse(deviceTypeHex, NumberStyles.HexNumber).ToString(CultureInfo.InvariantCulture);
-			var deviceType = (DeviceType)Enum.Parse(typeof(DeviceType), deviceTypeId);
-
-			if (!Enum.IsDefined(typeof(DeviceType), deviceType))
-				deviceType = DeviceType.UnknownDevice;
-
-			return deviceType;
-		}
 
 		private byte[] GetByteArray(byte[] bytes, int start, int length)
 		{
@@ -571,7 +545,7 @@ namespace BusproService
 		internal static OperationCode GetOperationCode(byte[] operationCode)
 		{
 			var operationCodeHex = ByteArrayToString(operationCode);
-			return ParseOperationCode(operationCodeHex);
+			return Parsing.ParseOperationCode(operationCodeHex);
 		}
 
 		public static string ByteArrayToText(byte[] bytes)
@@ -598,7 +572,7 @@ namespace BusproService
 		internal static DeviceType GetDeviceType(byte[] deviceType)
 		{
 			var deviceTypeHex = ByteArrayToString(deviceType);
-			return ParseDeviceType(deviceTypeHex);
+			return Parsing.ParseDeviceType(deviceTypeHex);
 		}
 
 

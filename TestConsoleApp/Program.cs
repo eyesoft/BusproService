@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using BusproService;
+using BusproService.Devices;
 using BusproService.Enums;
 
 namespace SmartHdlConsoleApp
@@ -18,7 +19,7 @@ namespace SmartHdlConsoleApp
 			using (var busproController = new BusproController(Ip, Port))
 			{
 				// listen to events for all commands across bus
-				//busproController.CommandReceived += BusproController_CommandReceived;
+				busproController.CommandReceived += BusproController_CommandReceived;
 
 				// listen to broadcast commands across bus
 				//busproController.BroadcastCommandReceived += BusproController_BroadcastCommandReceived;
@@ -45,7 +46,7 @@ namespace SmartHdlConsoleApp
 
 				//Thread.Sleep(10000);
 				//TurnOffLightMediaroom(busproController);
-				QueryDlp(busproController);
+				//QueryDlp(busproController);
 
 				Console.ReadLine();
 			}
@@ -132,6 +133,7 @@ namespace SmartHdlConsoleApp
 				sb.Append($"Operation code: \t{o} ({oHex})\n");
 				sb.Append($"Source device type: \t{dt} ({dtHex})\n");
 				sb.Append($"Address:\t\t{ss}.{sd} => {ts}.{td}\n");
+				sb.Append($"Address:\t\t{ParseDeviceName(ss, sd)} => {ParseDeviceName(ts, td)}\n");
 				sb.Append($"Additional content: \t{t}\n");
 
 				if (o == OperationCode.BroadcastSystemDateTime)
@@ -256,6 +258,7 @@ namespace SmartHdlConsoleApp
 			if (result == null || !result.Success) return;
 
 			Console.WriteLine($"{deviceAddress.SubnetId}.{deviceAddress.DeviceId}:");
+			Console.WriteLine($"{ParseDeviceName(deviceAddress.SubnetId, deviceAddress.DeviceId)}:");
 
 			Console.WriteLine($"Command received for DLP {ParseDeviceAddress(result.SourceAddress)}:");
 			ParseData(result);
@@ -267,6 +270,7 @@ namespace SmartHdlConsoleApp
 			if (result == null || !result.Success) return;
 
 			Console.WriteLine($"{deviceAddress.SubnetId}.{deviceAddress.DeviceId}:");
+			Console.WriteLine($"{ParseDeviceName(deviceAddress.SubnetId, deviceAddress.DeviceId)}:");
 
 			Console.WriteLine($"Response command received for DLP {ParseDeviceAddress(result.SourceAddress)}:");
 			ParseData(result);
@@ -280,6 +284,174 @@ namespace SmartHdlConsoleApp
 		//	Console.WriteLine($"Command received for DLP trim {ParseDeviceAddress(result.SourceAddress)}:");
 		//	ParseData(result);
 		//}
+
+
+
+		private static string ParseDeviceName(int subnetId, int deviceId)
+		{
+			var deviceName = $"{{Unknown device}} ({subnetId}.{deviceId})";
+
+			if (subnetId == 1)
+			{
+				switch (deviceId)
+				{
+					case 5:
+						deviceName = "Input1";
+						break;
+					case 10:
+						deviceName = "DLP Hall";
+						break;
+					case 11:
+						deviceName = "DLP Gang";
+						break;
+					case 12:
+						deviceName = "DLP Vaskerom";
+						break;
+					case 13:
+						deviceName = "DLP Trimrom";
+						break;
+					case 14:
+						deviceName = "DLP Kontor";
+						break;
+					case 15:
+						deviceName = "DLP Bad";
+						break;
+					case 16:
+						deviceName = "DLP Garasjebod";
+						break;
+					case 17:
+						deviceName = "DLP Sov2";
+						break;
+					case 18:
+						deviceName = "DLP Sov1";
+						break;
+					case 19:
+						deviceName = "Sov1 høyre";
+						break;
+					case 21:
+						deviceName = "DLP Stue";
+						break;
+					case 22:
+						deviceName = "DLP Kjøkken";
+						break;
+					case 23:
+						deviceName = "DLP Medierom";
+						break;
+					case 40:
+						deviceName = "12i1 Hall";
+						break;
+					case 41:
+						deviceName = "12i1 Gang";
+						break;
+					case 42:
+						deviceName = "8i1 Vaskerom";
+						break;
+					case 43:
+						deviceName = "8i1 Garasjebod";
+						break;
+					case 44:
+						deviceName = "8i1 Garasje";
+						break;
+					case 45:
+						deviceName = "8i1 Bad";
+						break;
+					case 46:
+						deviceName = "8i1 Bod Jonathan";
+						break;
+					case 49:
+						deviceName = "12i1 Stue";
+						break;
+					case 50:
+						deviceName = "12i1 Kjøkken";
+						break;
+					case 55:
+						deviceName = "8i1 Garderobe";
+						break;
+					case 71:
+						deviceName = "Dim1 Bad,kontor,sov";
+						break;
+					case 72:
+						deviceName = "Dim2 Kjøkken";
+						break;
+					case 73:
+						deviceName = "Dim3 Stue,g.bod";
+						break;
+					case 74:
+						deviceName = "Dim4 Medie,gang,vask";
+						break;
+					case 80:
+						deviceName = "Rele1";
+						break;
+					case 100:
+						deviceName = "Logikkmodul";
+						break;
+					case 110:
+						deviceName = "Sikkerhetsmodul";
+						break;
+					case 120:
+						deviceName = "RS232";
+						break;
+					case 130:
+						deviceName = "Rele2 Varme 1-6";
+						break;
+					case 131:
+						deviceName = "Rele2 Varme 7-10";
+						break;
+					case 165:
+						deviceName = "Sov1 venstre";
+						break;
+					case 255:
+						deviceName = "BROADCAST SUBNET " + subnetId;
+						break;
+				}
+			}
+
+			if (subnetId == 3)
+			{
+				switch (deviceId)
+				{
+					case 254:
+						deviceName = "Setup tool";
+						break;
+					case 255:
+						deviceName = "BROADCAST SUBNET " + subnetId;
+						break;
+				}
+			}
+
+			if (subnetId == 200)
+			{
+				switch (deviceId)
+				{
+					case 200:
+						deviceName = "BusproService";
+						break;
+				}
+			}
+
+			if (subnetId == 253)
+			{
+				switch (deviceId)
+				{
+					case 254:
+						deviceName = "HDL Buspro Setup Tool 2";
+						break;
+				}
+			}
+
+			if (subnetId == 255)
+			{
+				switch (deviceId)
+				{
+					case 255:
+						deviceName = "BROADCAST ALL SUBNETS";
+						break;
+				}
+			}
+
+			return deviceName;
+		}
+
 
 
 	}

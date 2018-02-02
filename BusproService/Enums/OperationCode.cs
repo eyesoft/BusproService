@@ -178,6 +178,8 @@ namespace BusproService.Enums
 		ControlFloorHeatingStatus = 0x1946,
 		ControlFloorHeatingStatusResponse = 0x1947,
 
+		BroadcastStatusOfSequence = 0xF036,
+
 
 
 

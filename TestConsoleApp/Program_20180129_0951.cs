@@ -243,7 +243,7 @@ namespace SmartHdlConsoleApp
 
 
 
-		
+
 
 
 
@@ -521,7 +521,7 @@ namespace SmartHdlConsoleApp
 
 
 
-		//private static string GetDeviceName(int subnetId, int deviceId)
+		//private static string ParseDeviceName(int subnetId, int deviceId)
 		//{
 		//	var deviceName = $"{{Unknown device}} ({subnetId}.{deviceId})";
 
@@ -688,7 +688,7 @@ namespace SmartHdlConsoleApp
 		//									 .Select(x => Byte.Parse(hex.Substring(2 * x, 2), NumberStyles.HexNumber))
 		//									 .ToArray();
 		//}
-		
+
 
 		/*
 	private static void NotImplementedExample()
