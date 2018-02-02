@@ -18,6 +18,7 @@ namespace BusproService.Enums
 		PIR_8in1 = 0x0135,					// 8i1
 		DIMMER_DT0601 = 0x0260,			// 6ch Dimmer
 		RELAY_R0816 = 0x01AC,				// Rele
+		DRY_4Z = 0x0077,						// Input
 
 		BusproService = 0xFFFC,
 		SmartHDLTest = 0xFFFD,

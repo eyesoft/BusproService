@@ -7,7 +7,7 @@ namespace BusproService
 	{
 	}
 
-	public class CommandEventArgs: EventArgs
+	public class CommandEventArgs : EventArgs
 	{
 		public bool Success;
 		public bool ErrorMessageSpecified;
@@ -63,6 +63,19 @@ namespace BusproService
 		internal byte[] RawData;
 		internal byte[] OperationCodeBytes;
 		internal byte[] SourceDeviceTypeBytes;
+	}
+
+	public class FloorHeatingStatus
+	{
+		public Temperature.Type TemperatureType { get; set; }
+		public int CurrentTemperature { get; internal set; }
+		public Temperature.Status Status { get; set; }
+		public Temperature.Mode Mode { get; set; }
+		public int TemperatureNormal { get; set; }
+		public int TemperatureDay { get; set; }
+		public int TemperatureNight { get; set; }
+		public int TemperatureAway { get; set; }
+		//public TemperatureTimer TemperatureTimer { get; internal set; }
 	}
 
 }

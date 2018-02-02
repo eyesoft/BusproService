@@ -144,13 +144,19 @@ namespace BusproService
 
 			foreach (var device in Device)
 			{
-				var subnetId = device.DeviceAddress.SubnetId;
-				var deviceId = device.DeviceAddress.DeviceId;
+				var deviceSubnetId = device.DeviceAddress.SubnetId;
+				var deviceDeviceId = device.DeviceAddress.DeviceId;
 
-				if ((subnetId == cmd.SourceAddress.SubnetId && deviceId == cmd.SourceAddress.DeviceId) ||
-					(subnetId == cmd.TargetAddress.SubnetId && deviceId == cmd.TargetAddress.DeviceId))
+				if ((deviceSubnetId == cmd.SourceAddress.SubnetId && deviceDeviceId == cmd.SourceAddress.DeviceId) ||
+					(deviceSubnetId == cmd.TargetAddress.SubnetId && deviceDeviceId == cmd.TargetAddress.DeviceId))
 				{
 					device.OnCommandReceived(cmd);
+				}
+				
+				var responseOperationCode = device.OperationCode + 1;
+				if ((deviceSubnetId == cmd.SourceAddress.SubnetId && deviceDeviceId == cmd.SourceAddress.DeviceId) && cmd.OperationCode == responseOperationCode)
+				{
+					device.OnResponseCommandReceived(cmd);
 				}
 			}
 

@@ -15,12 +15,11 @@ namespace BusproService.Enums
 		SingleChannelControlResponse = 0x0032,
 		ReadStatusOfChannels = 0x0033,
 		ReadStatusOfChannelsResponse = 0x0034,
-
 		CurtainControlEnabled = 0xDC23,
 		CurtainControlEnabledResponse = 0xDC24,
 		DetectAddress = 0xE5F5,
 		DetectAddressResponse = 0xE5F6,
-		ForwardlyReportStatus = 0xEFFF,
+		BroadcastStatusOfScene = 0xEFFF,
 		IsAddressConflict = 0x0284,
 		IsAddressConflictResponse = 0x0285,
 		IsDeviceOnline = 0xF065,
@@ -133,8 +132,8 @@ namespace BusproService.Enums
 		ReadCompensationOfBrightnessResponse = 0xDA01,
 		ModifyCompensationOfBrightness = 0xDA02,
 		ModifyCompensationOfBrightnessResponse = 0xDA03,
-		ReadStatusOfSensor = 0xDB00,
-		ReadStatusOfSensorResponse = 0xDB01,
+		ReadSensorsStatus = 0xDB00,
+		ReadSensorsStatusResponse = 0xDB01,
 		ReadPirSensitivity = 0xD828,
 		ReadPirSensitivityResponse = 0xD829,
 		ModifydPirSensitivity = 0xD826,
@@ -153,9 +152,9 @@ namespace BusproService.Enums
 		WriteRemarkOfLogicResponse = 0xD989,
 		ReadRemarkOfLogic = 0xD986,
 		ReadRemarkOfLogicResponse = 0xD987,
-		UniversalSwitch = 0xE01C,
-		UniversalSwitchResponse = 0xE01D,
-		CurrentDateTime = 0xDA44,
+		UniversalSwitchControl = 0xE01C,
+		UniversalSwitchControlResponse = 0xE01D,
+		BroadcastSystemDateTime = 0xDA44,
 
 		ReadAcCurrentStatus = 0xE0EC,
 		ReadAcCurrentStatusResponse = 0xE0ED,
@@ -163,27 +162,32 @@ namespace BusproService.Enums
 		ReadFloorHeatingStatus = 0x1944,
 		ReadFloorHeatingStatusResponse = 0x1945,
 
+		ReadStatusPir = 0x1645,
+		ReadStatusPirResponse = 0x1646,
 
-		XX_INFO_IF_FROM_12in1__1 = 0x1647,
-		XX_INFO_IF_FROM_12in1__2 = 0xE3E5,
-		XX_QUERY_DLP_FROM_SETUP_TOOL_1 = 0xE0E4,   //Ingen data sendes, svar sendes sender
+		BroadcastTemperature = 0xE3E5,
+
+		ReadTemperature = 0xE3E7,
+		ReadTemperatureResponse = 0xE3E8,
+		
+		BroadcastSensorsStatus = 0x1647,
+
+		ReadFloorHeatingSettings = 0x1940,
+		ReadFloorHeatingSettingsResponse = 0x1941,
+
+		ControlFloorHeatingStatus = 0x1946,
+		ControlFloorHeatingStatusResponse = 0x1947,
+
+
+
+
+
+		XX_QUERY_DLP_FROM_SETUP_TOOL_1 = 0xE0E4,
 		XX_RESPONSE_QUERY_DLP_FROM_SETUP_TOOL_1 = 0xE0E5,
-
-		//XX_QUERY_DLP_FROM_SETUP_TOOL_2 = 0x1944,   //Ingen data sendes, svar sendes sender			FLOOR HEATING WORKING STATUS
-		//XX_RESPONSE_QUERY_DLP_FROM_SETUP_TOOL_2 = 0x1945,
-
-		XX_QUERY_DLP_FROM_SETUP_TOOL_3 = 0x1940,   //Ingen data sendes, svar sendes sender			FLOOR HEATING
-		XX_RESPONSE_QUERY_DLP_FROM_SETUP_TOOL_3 = 0x1941,
-
-		XX_QUERY_DLP_FROM_SETUP_TOOL_4 = 0x1946,         //0 1 1 23 20 20 20										FLOOR HEATING WORKING STATUS CONTROL
-		XX_RESPONSE_QUERY_DLP_FROM_SETUP_TOOL_4 = 0x1947,
-
 		XX_QUERY_12in1_FROM_SETUP_TOOL_3 = 0xDB3E,
 		XX_RESPONSE_QUERY_12in1_FROM_SETUP_TOOL_3 = 0xDB3F,
 		XX_QUERY_12in1_FROM_SETUP_TOOL_4 = 0x1666,
 		XX_RESPONSE_QUERY_12in1_FROM_SETUP_TOOL_4 = 0x1667,
-		XX_QUERY_12in1_FROM_SETUP_TOOL_5 = 0x1645,
-		XX_RESPONSE_QUERY_12in1_FROM_SETUP_TOOL_5 = 0x1646,
 		XX_QUERY_12in1_FROM_SETUP_TOOL_6 = 0x165E,
 		XX_RESPONSE_QUERY_12in1_FROM_SETUP_TOOL_6 = 0x165F,
 		XX_QUERY_12in1_FROM_SETUP_TOOL_7 = 0x1641,

@@ -9,8 +9,8 @@ namespace SmartHdlConsoleApp
 	{
 		private const string Ip = "192.168.1.15";
 		private const int Port = 6000;
-		private const int SourceSubnetId = 1;
-		private const int SourceDeviceId = 255;
+		private const int SourceSubnetId = 200;
+		private const int SourceDeviceId = 200;
 		private const DeviceType SourceDeviceType = DeviceType.BusproService;
 
 		private static void Main(string[] args)
@@ -18,10 +18,10 @@ namespace SmartHdlConsoleApp
 			using (var busproController = new BusproController(Ip, Port))
 			{
 				// listen to events for all commands across bus
-				busproController.CommandReceived += BusproController_CommandReceived;
+				//busproController.CommandReceived += BusproController_CommandReceived;
 
 				// listen to broadcast commands across bus
-				busproController.BroadcastCommandReceived += BusproController_BroadcastCommandReceived;
+				//busproController.BroadcastCommandReceived += BusproController_BroadcastCommandReceived;
 
 				// sender/source address and devicetype
 				busproController.SourceAddress = new DeviceAddress { DeviceId = SourceDeviceId, SubnetId = SourceSubnetId };
@@ -32,7 +32,7 @@ namespace SmartHdlConsoleApp
 				Console.WriteLine("Press enter to close...\n");
 
 				// add devices to controller
-				AddDevices(busproController);
+				//AddDevices(busproController);
 
 				// return all devices in controller
 				//var devices = busproController.Device;
@@ -45,7 +45,7 @@ namespace SmartHdlConsoleApp
 
 				//Thread.Sleep(10000);
 				//TurnOffLightMediaroom(busproController);
-				//QueryDlp(busproController);
+				QueryDlp(busproController);
 
 				Console.ReadLine();
 			}
@@ -125,17 +125,16 @@ namespace SmartHdlConsoleApp
 			var dt = data.SourceDeviceType;
 			var dtHex = data.SourceDeviceTypeHex;
 
-			sb.Append($"Success: \t\t{success}");
+			//sb.Append($"Success: \t\t{success}");
 
 			if (success)
 			{
-				sb.Append("\n");
 				sb.Append($"Operation code: \t{o} ({oHex})\n");
 				sb.Append($"Source device type: \t{dt} ({dtHex})\n");
 				sb.Append($"Address:\t\t{ss}.{sd} => {ts}.{td}\n");
 				sb.Append($"Additional content: \t{t}\n");
 
-				if (o == OperationCode.CurrentDateTime)
+				if (o == OperationCode.BroadcastSystemDateTime)
 				{
 					sb.Append($"Current time: \t\t{b[2]}/{b[1]}/{b[0]} {b[3]}:{b[4]}:{b[5]}\n");
 				}
@@ -145,6 +144,11 @@ namespace SmartHdlConsoleApp
 					sb.Append($"Heat active: \t\t{b[2]}\n");
 					sb.Append($"Set temperature: \t{b[4]}\n");
 					sb.Append($"Current temperature: \t{b[1]}\n");
+				}
+
+				if (o == OperationCode.BroadcastTemperature)
+				{
+					sb.Append($"Current temperatur: \t{b[1]}\n");
 				}
 			}
 			else
@@ -195,30 +199,41 @@ namespace SmartHdlConsoleApp
 			}
 		}
 
+
+
+
+
+
+
+
+
+
+		public static void TestCallback(Command result)
+		{
+			Console.WriteLine(result.Success);
+		}
+
+
 		private static void QueryDlp(IBusproController busproController)
 		{
 			try
 			{
+				//Device.CommandResponseCallback callback = TestCallback;
+
 				var dlpStue = (Dlp)busproController.AddDevice(new Dlp(1, 21));
+				dlpStue.CommandReceived += (sender, args) => CommandReceived(sender, args, dlpStue.DeviceAddress);	// Variant 1
+				//dlpStue.ResponseCommandReceived += (sender, args) => ResponseCommandReceived(sender, args, dlpStue.DeviceAddress);	// Variant 1
 				var ok = dlpStue.ReadFloorHeatingStatus();
-				Console.WriteLine($"ReadFloorHeatingStatus(): {ok}\n\n");
+				//var ok = dlpStue.ReadFloorHeatingStatus(callback);
 
-				var dlpTrim = (Dlp)busproController.AddDevice(new Dlp(1, 13));
-				ok = dlpTrim.ReadFloorHeatingStatus();
-				Console.WriteLine($"ReadFloorHeatingStatus(): {ok}\n\n");
+				dlpStue.ControlFloorHeatingStatus(temperatureAway: 10, mode: Temperature.Mode.Away);
+				//Console.WriteLine("dlpStue.ControlFloorHeatingStatus(heatingStatus) sent...");
 
-				/*
-				ReadFloorHeatingStatus    
-				0		temperature.type (0 = Celsius, 1 = Fahrenheit)
-				24	temperature.current 
-				1		status (av/på)
-				1		modus (1 = Normal)
-				24	temperature.normal
-				20	temperature.day
-				20	temperature.night
-				20	temperature.away
-						temperature.timer
-				*/
+				//var dlpTrim = (Dlp)busproController.AddDevice(new Dlp(1, 13));
+				//dlpTrim.CommandReceived += dlpTrim_CommandReceived;
+				//dlpTrim.CommandReceived += delegate (object sender, CommandEventArgs args) { CommandReceived(sender, args, dlpTrim.DeviceAddress); };		// Variant 2 med lambda
+				//ok = dlpTrim.ReadFloorHeatingStatus();
+				//Console.WriteLine($"ReadFloorHeatingStatus(): {ok}\n\n");
 
 				//var dlpStue = (Dlp)busproController.AddDevice(new Dlp(1, 21));
 				//var ok = dlpStue.ReadAcCurrentState();
@@ -235,6 +250,36 @@ namespace SmartHdlConsoleApp
 			}
 		}
 
+		private static void CommandReceived(object sender, CommandEventArgs args, DeviceAddress deviceAddress)
+		{
+			var result = (Command)args;
+			if (result == null || !result.Success) return;
+
+			Console.WriteLine($"{deviceAddress.SubnetId}.{deviceAddress.DeviceId}:");
+
+			Console.WriteLine($"Command received for DLP {ParseDeviceAddress(result.SourceAddress)}:");
+			ParseData(result);
+		}
+
+		private static void ResponseCommandReceived(object sender, CommandEventArgs args, DeviceAddress deviceAddress)
+		{
+			var result = (Command)args;
+			if (result == null || !result.Success) return;
+
+			Console.WriteLine($"{deviceAddress.SubnetId}.{deviceAddress.DeviceId}:");
+
+			Console.WriteLine($"Response command received for DLP {ParseDeviceAddress(result.SourceAddress)}:");
+			ParseData(result);
+		}
+
+		//private static void dlpTrim_CommandReceived(object sender, CommandEventArgs args)
+		//{
+		//	var result = (Command)args;
+		//	if (result == null || !result.Success) return;
+
+		//	Console.WriteLine($"Command received for DLP trim {ParseDeviceAddress(result.SourceAddress)}:");
+		//	ParseData(result);
+		//}
 
 
 	}

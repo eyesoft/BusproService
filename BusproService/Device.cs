@@ -1,5 +1,5 @@
 ﻿using System;
-using BusproService;
+using System.Threading.Tasks;
 using BusproService.Enums;
 
 namespace BusproService
@@ -12,22 +12,25 @@ namespace BusproService
 
 	public class Device : IDevice
 	{
-
-
+		//public delegate void CommandResponseCallback(Command command);
+		
 		public delegate void OnCommandReceivedEventHandler(object sender, CommandEventArgs args);
 		public event OnCommandReceivedEventHandler CommandReceived;
-
 		internal virtual void OnCommandReceived(CommandEventArgs args)
 		{
 			CommandReceived?.Invoke(this, args);
 		}
-
-
-
-
-
-		internal readonly DeviceAddress DeviceAddress;
-		internal readonly DeviceType DeviceType;
+		
+		public delegate void OnResponseCommandReceivedEventHandler(object sender, CommandEventArgs args);
+		public event OnResponseCommandReceivedEventHandler ResponseCommandReceived;
+		internal virtual void OnResponseCommandReceived(CommandEventArgs args)
+		{
+			ResponseCommandReceived?.Invoke(this, args);
+		}
+		
+		internal OperationCode OperationCode { get; set; }
+		public readonly DeviceAddress DeviceAddress;
+		public readonly DeviceType DeviceType;
 		internal readonly BusproController Controller;
 
 		protected Device()
@@ -73,6 +76,8 @@ namespace BusproService
 			additionalContent[2] = (byte)minutes;
 			additionalContent[3] = (byte)seconds;
 
+			OperationCode = OperationCode.SingleChannelControl;
+
 			var data = new Command
 			{
 				AdditionalContent = additionalContent,
@@ -95,10 +100,12 @@ namespace BusproService
 			additionalContent[0] = (byte)switchId;
 			additionalContent[1] = (byte)switchState;
 
+			OperationCode = OperationCode.UniversalSwitchControl;
+
 			var data = new Command
 			{
 				AdditionalContent = additionalContent,
-				OperationCode = OperationCode.UniversalSwitch,
+				OperationCode = OperationCode.UniversalSwitchControl,
 				SourceAddress = Controller.SourceAddress,
 				SourceDeviceType = Controller.SourceDeviceType,
 				TargetAddress = DeviceAddress
@@ -111,6 +118,8 @@ namespace BusproService
 		public bool SendOperationCode(OperationCode operationCode, byte[] additionalContent)
 		{
 			if (additionalContent == null) additionalContent = new byte[0];
+
+			OperationCode = operationCode;
 
 			var data = new Command
 			{
@@ -200,6 +209,134 @@ namespace BusproService
 		{
 			return base.SendOperationCode(OperationCode.ReadFloorHeatingStatus, null);
 		}
+
+		//public bool ReadFloorHeatingStatus(CommandResponseCallback commandResponseCallback)
+		//{
+		//	var response = base.SendOperationCode(OperationCode.ReadFloorHeatingStatus, null);
+
+		//	if (commandResponseCallback != null)
+		//		commandResponseCallback(new Command());
+
+		//	return response;
+		//}
+
+		private async Task AsyncWait(int millisecondsDelay)
+		{
+			var wait = Task.Delay(millisecondsDelay);
+			await wait;
+		}
+
+		public async Task<bool> ControlFloorHeatingStatus(Temperature.Status? status = null, Temperature.Mode? mode = null,
+			int? temperatureNormal = null, int? temperatureDay = null, int? temperatureNight = null, int? temperatureAway = null)
+		{
+			var taskOk = true;
+			CommandEventArgs command = null;
+
+			var tcs = new TaskCompletionSource<CommandEventArgs>();
+			this.ResponseCommandReceived += (sender, args) => tcs.TrySetResult(args);
+
+			// Først leser vi for å hente siste verdier
+			var result = ReadFloorHeatingStatus();
+
+			if (tcs.Task == await Task.WhenAny(tcs.Task, Task.Delay(5000)))
+			{
+				await tcs.Task;
+				command = tcs.Task.Result;
+			}
+			else
+			{
+				// Timeout
+				taskOk = false;
+			}
+
+			if (!taskOk || command == null) return false;
+
+			// Vi bryr oss kun om ReadFloorHeatingStatusResponse sendt fra gjeldende device
+			if (command.OperationCode != OperationCode.ReadFloorHeatingStatusResponse ||
+				(this.DeviceAddress.SubnetId != command.SourceAddress.SubnetId && this.DeviceAddress.DeviceId != command.SourceAddress.DeviceId)) return false;
+
+			//Console.WriteLine($"ReadFloorHeatingStatusResponse: \t{BusproController.ByteArrayToText(command.AdditionalContent)}");
+
+			// Henter gjeldende status
+			var readFloorHeatingStatusResponse = ParseReadFloorHeatingStatusResponse(command);
+			if (readFloorHeatingStatusResponse == null) return false;
+
+			//Console.WriteLine($"Current FloorHeatingStatus: \t{Newtonsoft.Json.JsonConvert.SerializeObject(readFloorHeatingStatusResponse)}");
+
+			// Oppretter ny bytearray for oppdatering av status
+			var controlFloorHeatingStatus = new byte[7];
+			controlFloorHeatingStatus[0] = (byte)readFloorHeatingStatusResponse.TemperatureType;
+			controlFloorHeatingStatus[1] = (byte)readFloorHeatingStatusResponse.Status;
+			controlFloorHeatingStatus[2] = (byte)readFloorHeatingStatusResponse.Mode;
+			controlFloorHeatingStatus[3] = (byte)readFloorHeatingStatusResponse.TemperatureNormal;
+			controlFloorHeatingStatus[4] = (byte)readFloorHeatingStatusResponse.TemperatureDay;
+			controlFloorHeatingStatus[5] = (byte)readFloorHeatingStatusResponse.TemperatureNight;
+			controlFloorHeatingStatus[6] = (byte)readFloorHeatingStatusResponse.TemperatureAway;
+
+			if (status != null) controlFloorHeatingStatus[1] = (byte)status;
+			if (mode != null) controlFloorHeatingStatus[2] = (byte)mode;
+			if (temperatureNormal != null) controlFloorHeatingStatus[3] = (byte)temperatureNormal;
+			if (temperatureDay != null) controlFloorHeatingStatus[4] = (byte)temperatureDay;
+			if (temperatureNight != null) controlFloorHeatingStatus[5] = (byte)temperatureNight;
+			if (temperatureAway != null) controlFloorHeatingStatus[6] = (byte)temperatureAway;
+
+			//Console.WriteLine($"ControlFloorHeatingStatus: \t\t{BusproController.ByteArrayToText(controlFloorHeatingStatus)}");
+
+			// Oppdaterer status for gjeldende device
+			//SendOperationCode(OperationCode.ControlFloorHeatingStatus, controlFloorHeatingStatus);
+
+			return true;
+		}
+
+		private FloorHeatingStatus ParseReadFloorHeatingStatusResponse(CommandEventArgs command)
+		{
+			if (command?.OperationCode != OperationCode.ReadFloorHeatingStatusResponse) return null;
+
+			if (command.AdditionalContent?.Length < 8) return null;
+			var additionalContent = command.AdditionalContent;
+
+			try
+			{
+				var status = new FloorHeatingStatus
+				{
+					TemperatureType = (Temperature.Type)additionalContent[0],
+					CurrentTemperature = additionalContent[1],
+					Status = (Temperature.Status)additionalContent[2],
+					Mode = (Temperature.Mode)additionalContent[3],
+					TemperatureNormal = additionalContent[4],
+					TemperatureDay = additionalContent[5],
+					TemperatureNight = additionalContent[6],
+					TemperatureAway = additionalContent[7]
+					//TemperatureTimer = (TemperatureTimer)additionalContent[8]
+				};
+
+				return status;
+			}
+			catch (Exception ex)
+			{
+				var err = ex.Message;
+				return null;
+			}
+		}
+
+
+		//private static void CommandReceived(object sender, CommandEventArgs args, DeviceAddress deviceAddress)
+		//{
+		//	var result = (Command)args;
+		//	if (result == null || !result.Success) return;
+
+		//	Console.WriteLine($"{deviceAddress.SubnetId}.{deviceAddress.DeviceId}:");
+
+		//	Console.WriteLine($"Command received for DLP {deviceAddress.SubnetId}.{deviceAddress.DeviceId}:");
+		//	Console.WriteLine(BusproController.ByteArrayToText(result.AdditionalContent));
+		//}
+
+
+
+
+
+
+
 
 	}
 
